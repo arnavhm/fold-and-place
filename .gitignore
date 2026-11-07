@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# Data and models are downloaded, never committed (see DATA.md)
+data/
+models/
+*.pt
+*.onnx
+*.safetensors
+.cache/
+
+# Large experiment artefacts (small CSVs and PNGs in results/ ARE committed)
+results/**/*.npy
+results/**/*.parquet
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/

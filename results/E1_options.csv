@@ -1,0 +1,32 @@
+category,group,flat_w_cm,flat_l_cm,options,modes,most_compact,compact_a_cm,compact_b_cm,compact_h_cm
+tshirt,western,52.0,71.0,22,"file,flat,hang,roll","Sides in to 26 cm, thirds along the length",26.0,23.7,0.99
+shirt,western,55.0,76.0,22,"file,flat,hang,roll","Sides in to 18 cm, thirds along the length",25.3,18.3,0.94
+polo,western,52.0,72.0,22,"file,flat,hang,roll","Sides in to 26 cm, thirds along the length",26.0,24.0,1.24
+top,western,46.0,62.0,16,"file,flat,hang,roll","Sides in to 23 cm, thirds along the length",23.0,20.7,0.5
+jeans,western,50.0,104.0,15,"file,flat,hang,roll","Leg over leg, halves along the length",52.0,25.0,0.85
+trousers,western,50.0,104.0,15,"file,flat,hang,roll","Leg over leg, halves along the length",52.0,25.0,0.24
+shorts,western,52.0,50.0,13,"file,flat,roll","Leg over leg, thirds along the length",26.0,16.7,0.35
+trackpants,western,48.0,100.0,14,"file,flat,roll","Leg over leg, halves along the length",50.0,24.0,0.28
+leggings,western,30.0,95.0,14,"file,flat,roll","Leg over leg, thirds along the length",31.7,15.0,0.85
+hoodie,western,58.0,70.0,22,"file,flat,hang,roll","Sides in to 19 cm, halves along the length",35.0,19.3,4.6
+sweater,western,54.0,68.0,21,"file,flat,roll","Sides in to 18 cm, thirds along the length",22.7,18.0,7.55
+jacket,western,58.0,72.0,22,"file,flat,hang,roll","Sides in to 19 cm, thirds along the length",24.0,19.3,1.13
+blazer,western,54.0,76.0,1,hang,hang only,,,
+dress,western,46.0,100.0,16,"file,flat,hang,roll","Sides in to 15 cm, quarters along the length",25.0,15.3,1.2
+skirt,western,40.0,65.0,13,"file,flat,hang","Width in 2, length in 2",35.0,32.5,0.28
+innerwear,western,30.0,28.0,26,"file,flat,roll","Width in 1, length in 3",30.0,9.3,0.42
+socks,western,10.0,26.0,27,"file,flat,roll","Width in 1, length in 1",26.0,10.0,0.28
+saree,indian,115.0,550.0,27,"file,flat,hang,roll","Lengthwise in 2, then 12 panels",57.5,45.8,0.85
+blouse,indian,44.0,38.0,15,"file,flat,roll","Sides in to 15 cm, halves along the length",19.0,14.7,0.47
+petticoat,indian,55.0,100.0,12,"file,flat","Width in 2, length in 3",37.5,33.3,0.35
+kurta_men,indian,56.0,104.0,22,"file,flat,hang,roll","Sides in to 19 cm, quarters along the length",26.0,18.7,1.12
+kurti,indian,48.0,110.0,16,"file,flat,hang,roll","Sides in to 16 cm, quarters along the length",27.5,16.0,1.12
+salwar,indian,60.0,100.0,14,"file,flat,roll","Leg over leg, halves along the length",50.0,30.0,0.24
+palazzo,indian,65.0,100.0,15,"file,flat,hang,roll","Leg over leg, halves along the length",50.0,32.5,0.28
+dupatta,indian,92.0,250.0,39,"file,flat,hang,roll","Lengthwise in 3, then 8 panels",31.2,30.7,0.28
+lehenga,indian,40.0,107.0,3,flat,"Width in 3, length in 2",53.5,43.3,0.57
+sherwani,indian,58.0,110.0,10,flat,"Sides in to 19 cm, quarters along the length",27.5,19.3,2.69
+nehru_jacket,indian,52.0,70.0,16,"file,flat,hang,roll","Sides in to 26 cm, halves along the length",35.0,26.0,0.57
+dhoti,indian,115.0,400.0,33,"file,flat,hang,roll","Lengthwise in 2, then 12 panels",57.5,33.3,0.71
+lungi,indian,115.0,100.0,44,"file,flat,roll","Lengthwise in 2, then 12 panels",57.5,8.3,1.42
+gown,indian,50.0,140.0,16,"file,flat,hang,roll","Sides in to 25 cm, quarters along the length",35.0,25.0,1.13

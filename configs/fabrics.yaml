@@ -1,0 +1,36 @@
+# Fabric classes used by the fold engine and the optimizer.
+#
+# thickness_mm : thickness of ONE layer of fabric.
+# crease_risk  : 0 (springs back) .. 1 (creases badly); multiplies the crease penalty per fold line.
+# basis        : "measured" values come from published tables (see sources); "estimate" values are
+#                our assumptions and are flagged in the dashboard.
+#
+# Sources:
+#   [S1] Springer, Fashion and Textiles (2024), table 1 - silk / cotton / linen plain weave
+#        https://fashionandtextiles.springeropen.com/articles/10.1186/s40691-024-00400-z/tables/1
+#   [S2] Springer, Fashion and Textiles (2025), table 1 - cotton interlock / wool jersey
+#        https://fashionandtextiles.springeropen.com/articles/10.1186/s40691-025-00411-4/tables/1
+#   [S3] Crease behaviour by fibre (cellulose fibres crease easily; linen most; wool/silk recover
+#        better; polyester best): https://fumaofabric.com/?p=19044
+
+# Loft factor: folded stacks hold air between layers, so stack height = layers * thickness * k_loft.
+# This value is CALIBRATED by experiment E1 against a published retail tee fold of 11 x 9 x 0.5 in
+# (fold_and_place/folding/calibration.py). tests/test_calibration.py keeps it in sync.
+k_loft: 1.18
+
+fabrics:
+  silk:              {label: "Silk (light)",             thickness_mm: 0.09, crease_risk: 0.40, basis: measured, source: S1}
+  silk_heavy:        {label: "Silk saree (Kanjeevaram / Banarasi)", thickness_mm: 0.30, crease_risk: 0.50, basis: estimate, source: "heavier than S1 silk; no measured value found"}
+  cotton_woven:      {label: "Cotton (woven)",           thickness_mm: 0.25, crease_risk: 0.70, basis: measured, source: S1}
+  linen:             {label: "Linen",                    thickness_mm: 0.50, crease_risk: 1.00, basis: measured, source: S1}
+  wool_jersey:       {label: "Wool jersey knit",         thickness_mm: 0.65, crease_risk: 0.25, basis: measured, source: S2}
+  cotton_interlock:  {label: "Cotton interlock knit",    thickness_mm: 0.75, crease_risk: 0.45, basis: measured, source: S2}
+  cotton_jersey:     {label: "Cotton jersey (T-shirt)",  thickness_mm: 0.60, crease_risk: 0.45, basis: estimate, source: "between S2 knits"}
+  chiffon:           {label: "Chiffon / georgette",      thickness_mm: 0.10, crease_risk: 0.30, basis: estimate, source: "close to light silk (S1)"}
+  polyester:         {label: "Polyester",                thickness_mm: 0.30, crease_risk: 0.10, basis: estimate, source: S3}
+  denim:             {label: "Denim",                    thickness_mm: 0.90, crease_risk: 0.40, basis: estimate, source: "no measured value found"}
+  fleece:            {label: "Fleece (hoodie)",          thickness_mm: 1.50, crease_risk: 0.15, basis: estimate, source: "no measured value found"}
+  wool_knit_heavy:   {label: "Heavy wool knit (sweater)", thickness_mm: 2.00, crease_risk: 0.20, basis: estimate, source: "no measured value found"}
+  suiting:           {label: "Suiting (blazer, sherwani)", thickness_mm: 0.60, crease_risk: 0.35, basis: estimate, source: "no measured value found"}
+  brocade_zari:      {label: "Brocade / zari work",      thickness_mm: 0.80, crease_risk: 0.60, basis: estimate, source: "no measured value found"}
+  net_cancan:        {label: "Net with can-can layer",   thickness_mm: 0.40, crease_risk: 0.30, basis: estimate, source: "no measured value found"}

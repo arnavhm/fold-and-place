@@ -1,0 +1,62 @@
+# Garment categories (31): Western + Indian.
+#
+# All sizes are FLAT-LAY measurements in cm for size M (stitched garments) or the standard fabric
+# size (drapes). Stitched-garment sizes are approximate typical values and are editable in the
+# dashboard; drape sizes follow published standards:
+#   saree ~5.5 m x 1.15 m, blouse fabric ~80 cm, dupatta ~2.5 m (Utsav Fashion),
+#   dupatta width ~91-93 cm (iTokri), lehenga skirt length 42-43 in (Aza Fashions).
+#
+# template   : outline shape used by the fold engine (see fold_and_place/folding/templates.py)
+# base_layers: fabric layers in the flat outline (2 = front + back of a stitched garment)
+# sleeve_len : how far each sleeve sticks out sideways when laid flat (0 = none)
+# sleeve_w   : sleeve depth along the body length
+# hem_w      : width at the hem for flared shapes (defaults to flat_w)
+# rise       : trousers only - waist to crotch
+# drape      : true = fabric standard size, ignore S/M/L scaling
+# rod_in     : rod space when hung, inches (Lowe's: shirts ~1 in, pants/skirts ~1.25 in,
+#              dresses/jackets/suits 2-3 in)
+# hang_drop  : vertical space needed below the rod when hung, cm (defaults to flat_l)
+# embellish  : none | light | heavy (heavy => fold flat only, nothing on top, tissue between folds)
+# prompt     : text used for zero-shot image classification
+
+size_scale:            # multiply (flat_w, flat_l) for stitched garments
+  S:  [0.94, 0.97]
+  M:  [1.00, 1.00]
+  L:  [1.06, 1.03]
+  XL: [1.12, 1.06]
+
+categories:
+  # ---------------- Western ----------------
+  tshirt:      {label: "T-shirt",       group: western, template: tee,       base_layers: 2, flat_w: 52, flat_l: 71,  sleeve_len: 12, sleeve_w: 20, fabric: cotton_jersey, can_hang: true,  rod_in: 1.0,  prompt: "a short-sleeve t-shirt"}
+  shirt:       {label: "Shirt",         group: western, template: tee,       base_layers: 2, flat_w: 55, flat_l: 76,  sleeve_len: 60, sleeve_w: 22, fabric: cotton_woven,  can_hang: true,  rod_in: 1.0,  prompt: "a long-sleeve button-down shirt"}
+  polo:        {label: "Polo",          group: western, template: tee,       base_layers: 2, flat_w: 52, flat_l: 72,  sleeve_len: 12, sleeve_w: 20, fabric: cotton_interlock, can_hang: true, rod_in: 1.0, prompt: "a polo shirt with a collar"}
+  top:         {label: "Women's top",   group: western, template: tee,       base_layers: 2, flat_w: 46, flat_l: 62,  sleeve_len: 10, sleeve_w: 18, fabric: polyester,     can_hang: true,  rod_in: 1.0,  prompt: "a women's casual top or blouse"}
+  jeans:       {label: "Jeans",         group: western, template: trousers,  base_layers: 2, flat_w: 50, flat_l: 104, rise: 27, fabric: denim,         can_hang: true,  rod_in: 1.25, hang_drop: 60, prompt: "a pair of blue denim jeans"}
+  trousers:    {label: "Trousers",      group: western, template: trousers,  base_layers: 2, flat_w: 50, flat_l: 104, rise: 28, fabric: cotton_woven,  can_hang: true,  rod_in: 1.25, hang_drop: 60, prompt: "formal trousers or chinos"}
+  shorts:      {label: "Shorts",        group: western, template: trousers,  base_layers: 2, flat_w: 52, flat_l: 50,  rise: 27, fabric: cotton_woven,  can_hang: false, rod_in: 1.25, prompt: "a pair of shorts"}
+  trackpants:  {label: "Track pants",   group: western, template: trousers,  base_layers: 2, flat_w: 48, flat_l: 100, rise: 28, fabric: polyester,     can_hang: false, rod_in: 1.25, prompt: "track pants or joggers"}
+  leggings:    {label: "Leggings",      group: western, template: trousers,  base_layers: 2, flat_w: 30, flat_l: 95,  rise: 24, fabric: cotton_jersey, can_hang: false, rod_in: 1.0,  prompt: "a pair of leggings"}
+  hoodie:      {label: "Hoodie",        group: western, template: tee,       base_layers: 2, flat_w: 58, flat_l: 70,  sleeve_len: 62, sleeve_w: 24, fabric: fleece,     can_hang: true,  rod_in: 2.5,  prompt: "a hoodie sweatshirt"}
+  sweater:     {label: "Sweater",       group: western, template: tee,       base_layers: 2, flat_w: 54, flat_l: 68,  sleeve_len: 60, sleeve_w: 22, fabric: wool_knit_heavy, can_hang: false, rod_in: 2.5, prompt: "a knitted wool sweater"}
+  jacket:      {label: "Jacket",        group: western, template: tee,       base_layers: 2, flat_w: 58, flat_l: 72,  sleeve_len: 62, sleeve_w: 24, fabric: polyester,  can_hang: true,  rod_in: 3.0,  prompt: "a casual jacket"}
+  blazer:      {label: "Blazer",        group: western, template: tee,       base_layers: 2, flat_w: 54, flat_l: 76,  sleeve_len: 62, sleeve_w: 24, fabric: suiting,    can_hang: true,  rod_in: 3.0,  hang_only: true, prompt: "a formal blazer or suit jacket"}
+  dress:       {label: "Dress",         group: western, template: dress,     base_layers: 2, flat_w: 46, flat_l: 100, sleeve_len: 8, sleeve_w: 16, hem_w: 70, fabric: polyester, can_hang: true, rod_in: 2.0, prompt: "a women's dress"}
+  skirt:       {label: "Skirt",         group: western, template: skirt,     base_layers: 2, flat_w: 40, flat_l: 65,  hem_w: 70, fabric: polyester,    can_hang: true,  rod_in: 1.25, prompt: "a skirt"}
+  innerwear:   {label: "Innerwear",     group: western, template: rect,      base_layers: 2, flat_w: 30, flat_l: 28,  fabric: cotton_jersey, can_hang: false, rod_in: 1.0, prompt: "underwear or an undershirt"}
+  socks:       {label: "Socks (pair)",  group: western, template: rect,      base_layers: 4, flat_w: 10, flat_l: 26,  fabric: cotton_jersey, can_hang: false, rod_in: 1.0, prompt: "a pair of socks"}
+
+  # ---------------- Indian ----------------
+  saree:       {label: "Saree",         group: indian, template: rect,       base_layers: 1, flat_w: 115, flat_l: 550, drape: true, fabric: silk_heavy, can_hang: true,  rod_in: 1.0,  hang_drop: 60, prompt: "a draped saree with a pallu"}
+  blouse:      {label: "Saree blouse",  group: indian, template: tee,        base_layers: 2, flat_w: 44, flat_l: 38,  sleeve_len: 14, sleeve_w: 14, fabric: cotton_woven, can_hang: false, rod_in: 1.0, prompt: "a fitted saree blouse"}
+  petticoat:   {label: "Petticoat",     group: indian, template: skirt,      base_layers: 2, flat_w: 55, flat_l: 100, hem_w: 75, fabric: cotton_woven, can_hang: false, rod_in: 1.25, prompt: "a long cotton petticoat"}
+  kurta_men:   {label: "Men's kurta",   group: indian, template: tee,        base_layers: 2, flat_w: 56, flat_l: 104, sleeve_len: 60, sleeve_w: 22, fabric: cotton_woven, can_hang: true, rod_in: 1.0, prompt: "a men's knee-length kurta"}
+  kurti:       {label: "Women's kurta / kurti", group: indian, template: dress, base_layers: 2, flat_w: 48, flat_l: 110, sleeve_len: 30, sleeve_w: 18, hem_w: 60, fabric: cotton_woven, can_hang: true, rod_in: 1.0, prompt: "a women's kurta or kurti"}
+  salwar:      {label: "Salwar / churidar", group: indian, template: trousers, base_layers: 2, flat_w: 60, flat_l: 100, rise: 32, fabric: cotton_woven, can_hang: false, rod_in: 1.25, prompt: "salwar or churidar pants"}
+  palazzo:     {label: "Palazzo",       group: indian, template: trousers,   base_layers: 2, flat_w: 65, flat_l: 100, rise: 30, fabric: polyester,     can_hang: true,  rod_in: 1.25, hang_drop: 60, prompt: "wide palazzo pants"}
+  dupatta:     {label: "Dupatta",       group: indian, template: rect,       base_layers: 1, flat_w: 92, flat_l: 250, drape: true, fabric: chiffon,  can_hang: true,  rod_in: 0.75, hang_drop: 70, prompt: "a long dupatta scarf"}
+  lehenga:     {label: "Lehenga skirt", group: indian, template: skirt,      base_layers: 3, flat_w: 40, flat_l: 107, hem_w: 130, fabric: net_cancan, embellish: heavy, can_hang: false, rod_in: 3.0, prompt: "an embroidered lehenga skirt"}
+  sherwani:    {label: "Sherwani",      group: indian, template: tee,        base_layers: 2, flat_w: 58, flat_l: 110, sleeve_len: 62, sleeve_w: 24, fabric: suiting, embellish: heavy, can_hang: false, rod_in: 3.0, prompt: "a men's sherwani"}
+  nehru_jacket: {label: "Nehru jacket", group: indian, template: tee,        base_layers: 2, flat_w: 52, flat_l: 70,  sleeve_len: 0, sleeve_w: 0, fabric: suiting,  can_hang: true,  rod_in: 2.0,  prompt: "a sleeveless Nehru jacket"}
+  dhoti:       {label: "Dhoti / veshti", group: indian, template: rect,      base_layers: 1, flat_w: 115, flat_l: 400, drape: true, fabric: cotton_woven, can_hang: true, rod_in: 1.0, hang_drop: 60, prompt: "a white cotton dhoti"}
+  lungi:       {label: "Lungi / mundu", group: indian, template: rect,       base_layers: 2, flat_w: 115, flat_l: 100, drape: true, fabric: cotton_woven, can_hang: false, rod_in: 1.0, prompt: "a checked lungi or mundu"}
+  gown:        {label: "Anarkali / gown", group: indian, template: dress,    base_layers: 2, flat_w: 50, flat_l: 140, sleeve_len: 30, sleeve_w: 18, hem_w: 120, fabric: polyester, embellish: light, can_hang: true, rod_in: 2.5, prompt: "a long anarkali gown"}

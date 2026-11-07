@@ -1,0 +1,85 @@
+# Indian wardrobe presets. Units: cm. Coordinates: x = left->right inside the carcass,
+# z = height of the compartment's floor above the room floor, d = usable depth.
+#
+# kind:
+#   shelf      folded stacks side by side          h = clear height above the shelf
+#   drawer     items filed on edge in rows          h = drawer height
+#   rail_long  hanging rail for long garments       h = drop below the rod, w = rod length
+#   rail_short hanging rail for shirts / folded pants
+#   loft       top storage above the main carcass   (treated like a hard-to-reach shelf)
+#
+# Basis (Indian standards, approximate):
+#   carcass 78-84 in high, 20-24 in deep (hinged); 2-door 36-48 in wide, 3-door 54-72 in;
+#   sliding 24-28 in deep (Asian Paints Beautiful Homes)
+#   shelf clearance 12-15 in, drawer 6-9 in, shirt hanging ~40 in (Interior Company)
+#   long garments need 60-70 in of hanging space (HomeGuide)
+#   loft 12-24 in high (Asian Paints)
+#
+# Golden zone (easiest to reach): ~18 in below waist up to shoulder height (Racklify).
+# Default 55-135 cm from the floor; editable per person in the dashboard.
+
+golden_zone_cm: [55, 135]
+
+presets:
+  one_door:
+    label: "1-door hinged (52 x 200 x 53 cm)"
+    width: 52
+    height: 200
+    depth: 53
+    compartments:
+      - {id: loft,    kind: loft,       x: 0,  z: 172, w: 52, h: 28, d: 53}
+      - {id: rail,    kind: rail_short, x: 0,  z: 75,  w: 50, h: 95, d: 53}
+      - {id: shelf1,  kind: shelf,      x: 0,  z: 40,  w: 50, h: 33, d: 50}
+      - {id: shelf2,  kind: shelf,      x: 0,  z: 25,  w: 50, h: 13, d: 50}
+      - {id: drawer1, kind: drawer,     x: 0,  z: 3,   w: 46, h: 20, d: 45}
+
+  two_door:
+    label: "2-door hinged almirah (104 x 210 x 53 cm)"
+    width: 104
+    height: 210
+    depth: 53
+    compartments:
+      - {id: loft,    kind: loft,      x: 0,  z: 180, w: 104, h: 30, d: 53}
+      - {id: rail,    kind: rail_long, x: 0,  z: 28,  w: 50,  h: 150, d: 53}
+      - {id: drawer1, kind: drawer,    x: 0,  z: 4,   w: 46,  h: 20, d: 45}
+      - {id: shelf1,  kind: shelf,     x: 52, z: 138, w: 50,  h: 38, d: 50}
+      - {id: shelf2,  kind: shelf,     x: 52, z: 101, w: 50,  h: 35, d: 50}
+      - {id: shelf3,  kind: shelf,     x: 52, z: 64,  w: 50,  h: 35, d: 50}
+      - {id: shelf4,  kind: shelf,     x: 52, z: 27,  w: 50,  h: 35, d: 50}
+      - {id: drawer2, kind: drawer,    x: 52, z: 4,   w: 46,  h: 20, d: 45}
+
+  three_door:
+    label: "3-door hinged almirah (156 x 210 x 53 cm)"
+    width: 156
+    height: 210
+    depth: 53
+    compartments:
+      - {id: loft,     kind: loft,       x: 0,   z: 180, w: 156, h: 30, d: 53}
+      - {id: rail_l,   kind: rail_long,  x: 0,   z: 28,  w: 50,  h: 150, d: 53}
+      - {id: drawer_l, kind: drawer,     x: 0,   z: 4,   w: 46,  h: 20, d: 45}
+      - {id: rail_s,   kind: rail_short, x: 52,  z: 82,  w: 50,  h: 96, d: 53}
+      - {id: shelf_m1, kind: shelf,      x: 52,  z: 44,  w: 50,  h: 35, d: 50}
+      - {id: shelf_m2, kind: shelf,      x: 52,  z: 4,   w: 50,  h: 37, d: 50}
+      - {id: shelf_r1, kind: shelf,      x: 104, z: 140, w: 50,  h: 38, d: 50}
+      - {id: shelf_r2, kind: shelf,      x: 104, z: 103, w: 50,  h: 35, d: 50}
+      - {id: shelf_r3, kind: shelf,      x: 104, z: 66,  w: 50,  h: 35, d: 50}
+      - {id: drawer_r1, kind: drawer,    x: 104, z: 42,  w: 46,  h: 20, d: 45}
+      - {id: drawer_r2, kind: drawer,    x: 104, z: 4,   w: 46,  h: 20, d: 45}
+
+  sliding:
+    label: "2-panel sliding wardrobe (180 x 220 x 60 cm)"
+    width: 180
+    height: 220
+    depth: 60
+    compartments:
+      - {id: loft,     kind: loft,       x: 0,   z: 190, w: 180, h: 30, d: 60}
+      - {id: rail_l,   kind: rail_long,  x: 0,   z: 30,  w: 58,  h: 158, d: 60}
+      - {id: drawer_l, kind: drawer,     x: 0,   z: 5,   w: 54,  h: 22, d: 50}
+      - {id: shelf1,   kind: shelf,      x: 60,  z: 150, w: 58,  h: 38, d: 56}
+      - {id: shelf2,   kind: shelf,      x: 60,  z: 112, w: 58,  h: 36, d: 56}
+      - {id: shelf3,   kind: shelf,      x: 60,  z: 74,  w: 58,  h: 36, d: 56}
+      - {id: shelf4,   kind: shelf,      x: 60,  z: 36,  w: 58,  h: 36, d: 56}
+      - {id: drawer_m, kind: drawer,     x: 60,  z: 5,   w: 54,  h: 22, d: 50}
+      - {id: rail_up,  kind: rail_short, x: 120, z: 92,  w: 58,  h: 96, d: 60}
+      - {id: rail_lo,  kind: rail_short, x: 120, z: 30,  w: 58,  h: 60, d: 60}
+      - {id: drawer_r, kind: drawer,     x: 120, z: 5,   w: 54,  h: 22, d: 50}

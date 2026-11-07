@@ -1,0 +1,11 @@
+garment,method,folded_w_cm,folded_l_cm,target_w_cm,target_l_cm,err_w_pct,err_l_pct,plies,steps
+Shirt size L (58 x 78 cm),board fold (hem turned up),23.0,30.5,23.0,30.5,0.0,0.0,30,7
+Shirt size L (58 x 78 cm),equal panels,23.0,26.09,23.0,30.5,0.0,-14.4,30,7
+T-shirt size L (55 x 73 cm),board fold (hem turned up),23.0,30.5,23.0,30.5,0.0,0.0,18,5
+T-shirt size L (55 x 73 cm),equal panels,23.0,24.38,23.0,30.5,0.0,-20.1,18,5
+T-shirt size M (52 x 71 cm),board fold (hem turned up),23.0,30.5,23.0,30.5,0.0,0.0,18,5
+T-shirt size M (52 x 71 cm),equal panels,23.0,23.67,23.0,30.5,0.0,-22.4,18,5
+Men's kurta size L (59 x 107 cm),board fold (hem turned up),23.0,30.5,23.0,30.5,0.0,0.0,36,8
+Men's kurta size L (59 x 107 cm),equal panels,23.0,26.78,23.0,30.5,0.0,-12.2,36,8
+Polo size L (55 x 74 cm),board fold (hem turned up),23.0,30.5,23.0,30.5,0.0,0.0,18,5
+Polo size L (55 x 74 cm),equal panels,23.0,24.72,23.0,30.5,0.0,-19.0,18,5
