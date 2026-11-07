@@ -31,6 +31,8 @@ else:
 
 opts = generate_options(g)
 chosen = plan.choice.get(g.id) if plan is not None and g.id in plan.garments else None
+if chosen is not None:  # the plan's fold first
+    opts = sorted(opts, key=lambda o: o.id != chosen.id)
 tbl = pd.DataFrame(
     [
         {

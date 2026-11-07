@@ -238,11 +238,11 @@ function crease(k){ const st = D.steps[k]; if(!st){edges.visible=false;return;} 
   edges.geometry.setAttribute('position', new THREE.Float32BufferAttribute(v,3)); }
 function bbox(arr){let a=[1e9,1e9,1e9],b=[-1e9,-1e9,-1e9];
   for(let i=0;i<N;i++)for(let d=0;d<3;d++){a[d]=Math.min(a[d],arr[3*i+d]);b[d]=Math.max(b[d],arr[3*i+d]);} return [a,b];}
-let k=0, t=0, playing=D.autoplay, pauseUntil=performance.now()+700;
+let frozen=false, k=0, t=0, playing=D.autoplay, pauseUntil=performance.now()+700;
 const goal = {c:new THREE.Vector3(), r:60};
 function aim(fast){ const [a,b]=bbox(K[Math.min(k+1,S)]); const [a0,b0]=bbox(K[k]);
   const lo=[Math.min(a[0],a0[0]),Math.min(a[1],a0[1])], hi=[Math.max(b[0],b0[0]),Math.max(b[1],b0[1])];
-  goal.c.set((lo[0]+hi[0])/2, 0, -(lo[1]+hi[1])/2); goal.r = Math.max(hi[0]-lo[0], (hi[1]-lo[1])*1.15)*0.62+10;
+  goal.r = Math.max(hi[0]-lo[0], (hi[1]-lo[1])*1.15)*0.62+10; goal.c.set((lo[0]+hi[0])/2, 0, -(lo[1]+hi[1])/2 + goal.r*0.18);
   if(fast){ ctl.target.copy(goal.c); cam.position.set(goal.c.x, goal.r*2.1, goal.c.z+goal.r*1.25); } }
 function label(){ const st=D.steps[k];
   document.getElementById('txt').textContent = k<S ? (st.text||'Fold.') : D.done;
@@ -260,10 +260,18 @@ let last = performance.now();
 function loop(now){ requestAnimationFrame(loop); const dt=Math.min(0.05,(now-last)/1000); last=now;
   if(playing && k<S && now>pauseUntil){ t += dt/1.1; if(t>=1){ k++; t=0; setPos(K[k]); crease(k); aim(false); label(); pauseUntil=now+450; if(k>=S){playing=false;label();} }
     else setPos(frame(k, ease(t))); }
+  if(frozen){ R.render(scene, cam); return; }
   ctl.target.lerp(goal.c, 0.08);
   const want = new THREE.Vector3(goal.c.x, goal.r*2.1, goal.c.z+goal.r*1.25);
   if(!ctl._dragging) cam.position.lerp(want, 0.06);
+  const nr=Math.max(0.5, goal.r*0.1); if(Math.abs(cam.near-nr)>1e-3){cam.near=nr; cam.far=goal.r*40; cam.updateProjectionMatrix();}
   ctl.update(); R.render(scene, cam); }
 cv.addEventListener('pointerdown',()=>{ctl._dragging=true;}); cv.addEventListener('wheel',()=>{ctl._dragging=true;});
 requestAnimationFrame(loop);
+// for scripted frame capture (docs/img GIFs): freeze the camera and show step kk at fraction tt
+window.foldAt = function(kk, tt, follow){ playing=false; frozen=true; k=Math.min(kk,S); t=tt;
+  const cur = tt>0 && k<S ? frame(k, ease(tt)) : K[k]; setPos(cur); crease(k); label();
+  if(follow){ const [a,b]=bbox(cur); const c=new THREE.Vector3((a[0]+b[0])/2,0,-(a[1]+b[1])/2);
+    const r=Math.max(b[0]-a[0],(b[1]-a[1])*1.15)*0.62+10; c.z += r*0.18; ctl.target.copy(c); cam.position.set(c.x, r*2.1, c.z+r*1.25); cam.near=Math.max(0.5, r*0.1); cam.far=r*40; cam.updateProjectionMatrix(); ctl.update(); }
+  R.render(scene, cam); };
 </script></body></html>"""
