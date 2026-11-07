@@ -14,6 +14,8 @@ import time
 
 EXPERIMENTS = {
     "E1": "fold_and_place.experiments.e1_folds",
+    "E2": "fold_and_place.experiments.e2_vision",
+    "E3": "fold_and_place.experiments.e3_measure",
     "E4": "fold_and_place.experiments.e4_optimizer",
     "E5": "fold_and_place.experiments.e5_mechanisms",
     "E6": "fold_and_place.experiments.e6_shapley",
