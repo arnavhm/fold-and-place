@@ -1,0 +1,41 @@
+preset,scale,garments,method,stored,overflow,stored_value,total_value,retrieval_effort,effort_incl_overflow,crease_load,packet_fill_pct,rod_fill_pct,objective,solve_s,gap,status
+one_door,1.0,97,B1 traditional flat stacks,90,7,478.0,527.0,446.22,477.22,233.55,19.5,15.2,8849.23,0.0,,heuristic
+one_door,1.0,97,B2 KonMari file fold,97,0,527.0,527.0,591.43,591.43,311.6,23.8,15.2,9636.97,0.0,,heuristic
+one_door,1.0,97,B3 hang everything possible,94,3,505.0,527.0,498.94,513.94,213.25,14.3,95.2,9372.81,0.0,,heuristic
+one_door,1.0,97,B4 greedy,96,1,521.0,527.0,349.06,350.56,111.9,17.7,96.5,9957.54,0.0,,heuristic
+one_door,1.0,97,CP-SAT optimizer,97,0,527.0,527.0,346.08,346.08,96.85,17.7,95.2,10097.07,2.46,0.0,OPTIMAL
+one_door,2.0,194,B1 traditional flat stacks,178,16,934.0,1058.0,1181.92,1244.67,463.1,37.5,30.5,16972.23,0.0,,heuristic
+one_door,2.0,194,B2 KonMari file fold,188,6,1013.0,1058.0,1129.83,1190.58,605.1,39.8,96.5,18464.32,0.0,,heuristic
+one_door,2.0,194,B3 hang everything possible,180,14,947.0,1058.0,1341.14,1401.89,426.4,33.4,96.5,17111.71,0.0,,heuristic
+one_door,2.0,194,B4 greedy,191,3,1037.0,1058.0,997.52,1008.02,308.75,41.7,99.1,19423.24,0.0,,heuristic
+one_door,2.0,194,CP-SAT optimizer,194,0,1058.0,1058.0,742.75,742.75,292.7,39.3,97.8,20124.55,30.26,0.00012,FEASIBLE
+two_door,1.0,97,B1 traditional flat stacks,97,0,527.0,527.0,464.0,464.0,292.75,10.0,15.2,9783.25,0.0,,heuristic
+two_door,1.0,97,B2 KonMari file fold,97,0,527.0,527.0,763.31,763.31,268.7,8.7,40.6,9507.99,0.0,,heuristic
+two_door,1.0,97,B3 hang everything possible,97,0,527.0,527.0,480.06,480.06,242.95,7.4,95.2,9816.99,0.0,,heuristic
+two_door,1.0,97,B4 greedy,96,1,521.0,527.0,354.25,355.75,103.1,6.6,99.1,9961.15,0.0,,heuristic
+two_door,1.0,97,CP-SAT optimizer,97,0,527.0,527.0,352.44,352.44,88.2,8.2,96.5,10099.35,2.57,0.0,OPTIMAL
+two_door,2.0,194,B1 traditional flat stacks,194,0,1058.0,1058.0,841.29,841.29,585.5,19.9,30.5,19733.22,0.0,,heuristic
+two_door,2.0,194,B2 KonMari file fold,194,0,1058.0,1058.0,1330.45,1330.45,572.7,17.5,81.3,19256.84,0.0,,heuristic
+two_door,2.0,194,B3 hang everything possible,194,0,1058.0,1058.0,859.74,859.74,526.4,17.9,96.5,19773.86,0.0,,heuristic
+two_door,2.0,194,B4 greedy,194,0,1058.0,1058.0,709.66,709.66,265.6,17.1,99.1,20184.75,0.0,,heuristic
+two_door,2.0,194,CP-SAT optimizer,194,0,1058.0,1058.0,694.79,694.79,236.7,17.7,96.5,20228.51,13.08,0.0,OPTIMAL
+three_door,1.0,97,B1 traditional flat stacks,97,0,527.0,527.0,464.0,464.0,292.75,7.3,7.6,9783.25,0.0,,heuristic
+three_door,1.0,97,B2 KonMari file fold,97,0,527.0,527.0,569.21,569.21,268.7,6.4,20.3,9702.09,0.0,,heuristic
+three_door,1.0,97,B3 hang everything possible,97,0,527.0,527.0,485.31,485.31,137.75,2.8,95.9,9916.94,0.0,,heuristic
+three_door,1.0,97,B4 greedy,97,0,527.0,527.0,360.1,360.1,71.65,3.5,95.9,10108.26,0.0,,heuristic
+three_door,1.0,97,CP-SAT optimizer,97,0,527.0,527.0,359.44,359.44,61.45,3.5,97.8,10119.1,11.36,0.0,OPTIMAL
+three_door,2.0,194,B1 traditional flat stacks,194,0,1058.0,1058.0,829.52,829.52,585.5,14.7,15.2,19744.98,0.0,,heuristic
+three_door,2.0,194,B2 KonMari file fold,194,0,1058.0,1058.0,1377.56,1377.56,536.95,12.9,40.6,19245.49,0.0,,heuristic
+three_door,2.0,194,B3 hang everything possible,194,0,1058.0,1058.0,893.62,893.62,481.7,10.8,97.8,19784.68,0.0,,heuristic
+three_door,2.0,194,B4 greedy,194,0,1058.0,1058.0,704.17,704.17,209.1,11.6,95.9,20246.73,0.0,,heuristic
+three_door,2.0,194,CP-SAT optimizer,194,0,1058.0,1058.0,711.52,711.52,160.4,11.9,96.5,20288.08,30.53,0.00019,FEASIBLE
+sliding,1.0,97,B1 traditional flat stacks,97,0,527.0,527.0,396.3,396.3,292.75,6.2,4.4,9850.95,0.0,,heuristic
+sliding,1.0,97,B2 KonMari file fold,97,0,527.0,527.0,763.79,763.79,260.9,5.3,11.7,9515.31,0.0,,heuristic
+sliding,1.0,97,B3 hang everything possible,97,0,527.0,527.0,566.31,566.31,124.2,2.0,68.2,9849.49,0.0,,heuristic
+sliding,1.0,97,B4 greedy,97,0,527.0,527.0,335.1,335.1,97.9,3.5,36.1,10107.01,0.0,,heuristic
+sliding,1.0,97,CP-SAT optimizer,97,0,527.0,527.0,335.1,335.1,97.9,3.5,36.1,10107.01,1.85,0.0,OPTIMAL
+sliding,2.0,194,B1 traditional flat stacks,194,0,1058.0,1058.0,1021.59,1021.59,585.5,12.3,8.8,19552.92,0.0,,heuristic
+sliding,2.0,194,B2 KonMari file fold,194,0,1058.0,1058.0,1526.84,1526.84,521.8,10.5,23.4,19111.36,0.0,,heuristic
+sliding,2.0,194,B3 hang everything possible,194,0,1058.0,1058.0,942.91,942.91,351.1,5.6,98.5,19866.0,0.0,,heuristic
+sliding,2.0,194,B4 greedy,194,0,1058.0,1058.0,680.81,680.81,201.1,7.2,65.3,20278.1,0.0,,heuristic
+sliding,2.0,194,CP-SAT optimizer,194,0,1058.0,1058.0,676.75,676.75,199.7,7.3,61.3,20283.54,8.55,0.0,OPTIMAL

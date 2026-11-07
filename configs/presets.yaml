@@ -83,3 +83,15 @@ presets:
       - {id: rail_up,  kind: rail_short, x: 120, z: 92,  w: 58,  h: 96, d: 60}
       - {id: rail_lo,  kind: rail_short, x: 120, z: 30,  w: 58,  h: 60, d: 60}
       - {id: drawer_r, kind: drawer,     x: 120, z: 5,   w: 54,  h: 22, d: 50}
+
+  compact_shared:
+    # A deliberately tight shared unit (hostel / PG locker style) used by the mechanism
+    # experiments: space is scarce, so who gets what actually matters.
+    label: "Compact shared locker (one shelf, short rail, drawer; 40 x 100 x 38 cm)"
+    width: 40
+    height: 100
+    depth: 38
+    compartments:
+      - {id: shelf,  kind: shelf,      x: 0, z: 80, w: 38, h: 14, d: 36}
+      - {id: rail,   kind: rail_short, x: 0, z: 25, w: 8,  h: 52, d: 38}
+      - {id: drawer, kind: drawer,     x: 0, z: 5,  w: 30, h: 12, d: 34}

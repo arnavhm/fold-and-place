@@ -14,6 +14,7 @@ import time
 
 EXPERIMENTS = {
     "E1": "fold_and_place.experiments.e1_folds",
+    "E4": "fold_and_place.experiments.e4_optimizer",
 }
 
 
