@@ -1,0 +1,11 @@
+mechanism,trials,profitable,rate,max_gain_points,by_kind,non_monotone
+VCG,60,0,0.0,0.0,"{'scale': '0/26', 'mixed': '0/20', 'single': '0/14'}",
+VCG + Bailey redistribution,30,0,0.0,0.0,"{'scale': '0/14', 'mixed': '0/9', 'single': '0/7'}",
+Myerson knapsack auction (greedy),300,78,0.26,21.218,"{'scale': '44/115', 'mixed': '23/95', 'single': '11/90'}",
+Random serial dictatorship,15,0,0.0,0.0,"{'scale': '0/6', 'mixed': '0/5', 'single': '0/4'}",
+Maximum Nash welfare,10,0,0.0,0.0,"{'scale': '0/4', 'mixed': '0/4', 'single': '0/2'}",
+Equal split,40,0,0.0,0.0,"{'scale': '0/20', 'mixed': '0/12', 'single': '0/8'}",
+"First come, first served",50,0,0.0,0.0,"{'scale': '0/22', 'mixed': '0/16', 'single': '0/12'}",
+Proportional to claims,40,18,0.45,12.085,"{'scale': '11/20', 'mixed': '7/12', 'single': '0/8'}",
+Priority by claimed value,300,160,0.5333333333333333,24.332,"{'scale': '80/115', 'mixed': '51/95', 'single': '29/90'}",
+Myerson knapsack auction (greedy) [per garment],300,0,0.0,0.0,,0.0

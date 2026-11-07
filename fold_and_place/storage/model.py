@@ -51,6 +51,37 @@ def _mm_down(cm: float) -> int:
     return int(math.floor(cm * 10 + 1e-6))
 
 
+def _useful(opts: list[FoldOption], c) -> list[int]:
+    """Indices of options worth considering in compartment ``c``.
+
+    Inside one compartment an option matters only through the space it takes across the lanes
+    (stack width / row depth / rod), what it uses up within its lane (height / thickness) and its
+    crease count (reach is the same for every option allowed there). An option no better on all
+    three than another is never needed, so dropping it is LOSSLESS. This depends only on
+    geometry, never on values.
+    """
+    cand = []
+    for i, o in enumerate(opts):
+        if not fits(o, c):
+            continue
+        if c.layout == "rail":
+            key = (o.rod_in, 0.0, o.creases)
+        elif c.layout == "stack":
+            key = (stack_width(o, c), o.h, o.creases)
+        else:
+            key = (o.a, o.h, o.creases)
+        cand.append((i, key))
+    keep = []
+    for i, k in cand:
+        dominated = any(
+            all(a <= b + 1e-9 for a, b in zip(k2, k)) and any(a < b - 1e-9 for a, b in zip(k2, k))
+            for _, k2 in cand
+        )
+        if not dominated and not any(k == k2 for j, k2 in keep):
+            keep.append((i, k))
+    return [i for i, _ in keep]
+
+
 def shortlist(opts: list[FoldOption], per_mode: int = OPTIONS_PER_MODE) -> list[FoldOption]:
     """Keep a few options per mode: the narrowest, the thinnest, the fewest creases (+ named)."""
     out: list[FoldOption] = []
@@ -81,6 +112,7 @@ class SolveConfig:
     lam_crease: float = 1.0
     seed: int = 0
     warm_start: bool = True
+    options_per_mode: int = OPTIONS_PER_MODE
 
 
 def solve(
@@ -88,36 +120,50 @@ def solve(
     w: Wardrobe,
     values: dict[str, float] | None = None,
     cfg: SolveConfig | None = None,
+    objective: str = "welfare",
+    owner: str | None = None,
+    floors: dict[str, int] | None = None,
 ) -> Plan:
     """Optimal (or best found within the time limit) plan. ``values`` overrides garment values
-    (used by the mechanisms, where values are what people REPORT)."""
+    (used by the mechanisms, where values are what people REPORT).
+
+    objective "welfare": the weighted sum in the module docstring.
+    objective "nash"   : maximise the PRODUCT over owners of the value each owner gets stored
+                         (Maximum Nash Welfare), ties broken by the welfare sum.
+    objective "owner"  : maximise only ``owner``'s part of the welfare, subject to ``floors``
+                         (owner -> minimum integer score already guaranteed): one step of a
+                         serial dictatorship.
+
+    With ``cfg.warm_start=False`` the set of possible plans depends only on garment geometry,
+    never on the values - required for the VCG mechanism to be truthful.
+    """
     cfg = cfg or SolveConfig()
     t0 = time.time()
     garments = {g.id: g for g in gs}
     val = {g.id: float((values or {}).get(g.id, g.value)) for g in gs}
     if not gs:
         return Plan(w, garments, {}, [], [], method="CP-SAT optimizer", status="OPTIMAL", gap=0.0)
-    options = {g.id: shortlist(generate_options(g)) for g in gs}
+    options = {g.id: list(generate_options(g)) for g in gs}
 
     # The model must contain every baseline's plan, so the optimum can never be worse than a
-    # baseline: add the options and lane counts the baselines used, and start from the best one.
+    # baseline: keep enough lanes for what the baselines used, and start from the best one.
+    # (Their options are already covered: see _useful below, which is lossless.)
     seeds: list[Plan] = []
     if cfg.warm_start:
         seeds = [
             fn(gs, w) if name != "B4" else b4_greedy(gs, w, values=val, lam_reach=cfg.lam_reach, lam_crease=cfg.lam_crease)
             for name, fn in BASELINES.items()
         ]
-        for sp in seeds:
-            for gid, o in sp.choice.items():
-                if not any(c.method == o.method and c.mode == o.mode for c in options[gid]):
-                    options[gid].append(o)
     seed_lanes: dict[str, int] = {}
     for sp in seeds:
         counts: dict[str, int] = {}
         for lane in sp.lanes:
-            counts[lane.compartment] = counts.get(lane.compartment, 0) + 1
+            if lane.layout == w.get(lane.compartment).layout:
+                counts[lane.compartment] = counts.get(lane.compartment, 0) + 1
         for cid, n in counts.items():
             seed_lanes[cid] = max(seed_lanes.get(cid, 0), n)
+
+    useful = {(g.id, c.id): _useful(options[g.id], c) for g in gs for c in w.compartments}
 
     # ---- lanes per compartment -------------------------------------------------------------
     lanes: list[tuple[str, str, int]] = []  # (compartment id, layout, index)
@@ -127,9 +173,11 @@ def solve(
             continue
         spans = []
         for g in gs:
-            for o in options[g.id]:
-                if fits(o, c) and not (c.kind == "loft" and g.fold_flat_only):
-                    spans.append(stack_width(o, c) if c.layout == "stack" else o.a)
+            if c.kind == "loft" and g.fold_flat_only:
+                continue
+            for oi in useful[(g.id, c.id)]:
+                o = options[g.id][oi]
+                spans.append(stack_width(o, c) if c.layout == "stack" else o.a)
         if not spans:
             continue
         cap = c.w if c.layout == "stack" else c.d
@@ -146,9 +194,8 @@ def solve(
         for g in gs:
             if c.kind == "loft" and g.fold_flat_only:
                 continue
-            for oi, o in enumerate(options[g.id]):
-                if not fits(o, c):
-                    continue
+            for oi in useful[(g.id, c.id)]:
+                o = options[g.id][oi]
                 key = (g.id, oi, li)
                 x[key] = m.new_bool_var(f"x[{g.id},{oi},{li}]")
                 reach = reach_cost(g, o, c)
@@ -194,7 +241,24 @@ def solve(
         for a, b in zip(span_vars, span_vars[1:]):  # symmetry breaking: lanes widest first
             m.add(a >= b)
 
-    m.maximize(sum(coef[k] * x[k] for k in x))
+    welfare_expr = sum(coef[k] * x[k] for k in x)
+    owner_of = {g.id: g.owner for g in gs}
+    owner_expr = {}
+    for who in {g.owner for g in gs}:
+        owner_expr[who] = sum(coef[k] * x[k] for k in x if owner_of[k[0]] == who)
+    for who, lo in (floors or {}).items():
+        if who in owner_expr:
+            m.add(owner_expr[who] >= lo)
+    if objective == "owner":
+        if owner not in owner_expr:
+            raise ValueError("objective 'owner' needs an owner with garments")
+        m.maximize(owner_expr[owner])
+    elif objective == "nash":
+        _nash_objective(m, x, gs, val, welfare_expr, sum(abs(c) for c in coef.values()))
+    elif objective == "welfare":
+        m.maximize(welfare_expr)
+    else:
+        raise ValueError(f"unknown objective {objective!r}")
 
     # ---- warm start from the best baseline --------------------------------------------------
     if seeds:
@@ -236,8 +300,42 @@ def solve(
         gap=round(gap, 5),
     )
     plan.objective_scaled = obj  # type: ignore[attr-defined]
+    scores: dict[str, int] = {who: 0 for who in owner_expr}
+    for k, var in x.items():
+        if solver.value(var):
+            scores[owner_of[k[0]]] += coef[k]
+    plan.owner_scores = scores  # type: ignore[attr-defined]
     order_lanes(plan)
     return plan
+
+
+NASH_VALUE_SCALE = 10  # owner utilities as integers (0.1 value-point resolution)
+INT64_SAFE = 4_000_000_000_000_000_000
+
+
+def _nash_objective(m, x, gs, val, welfare_expr, coef_bound: int) -> None:
+    owners = sorted({g.id: g.owner for g in gs}.values())
+    owners = sorted(set(owners))
+    owner_of = {g.id: g.owner for g in gs}
+    utils, caps = [], []
+    for who in owners:
+        terms = [(int(round(NASH_VALUE_SCALE * val[k[0]])), x[k]) for k in x if owner_of[k[0]] == who]
+        cap = sum(max(0, c) for c, _ in terms)
+        u = m.new_int_var(0, max(cap, 0), f"u[{who}]")
+        m.add(u == sum(c * v for c, v in terms))
+        utils.append(u)
+        caps.append(max(cap, 1))
+    prod, prod_cap = utils[0], caps[0]
+    for u, cap in zip(utils[1:], caps[1:]):
+        prod_cap *= cap
+        p = m.new_int_var(0, prod_cap, f"prod{len(str(prod_cap))}")
+        m.add_multiplication_equality(p, [prod, u])
+        prod = p
+    tie = coef_bound + 1
+    if prod_cap * tie < INT64_SAFE:
+        m.maximize(prod * tie + welfare_expr)
+    else:  # too large to break ties exactly: product only
+        m.maximize(prod)
 
 
 def _hint_from_plan(plan: Plan, lanes, options) -> set[tuple[str, int, int]]:

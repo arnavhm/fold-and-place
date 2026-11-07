@@ -1,0 +1,5 @@
+rule,father,mother,student,in_core,blocking_groups
+Shapley value,3000,10000,3000,True,
+Equal split,5333,5333,5333,False,father + student
+By garment count,4619,5773,5608,False,father + student
+By packed volume,3431,6824,5746,False,father + student

@@ -1,0 +1,5 @@
+mechanism,truthful_welfare,equilibrium_welfare,optimal_welfare,poa_ratio,loss_vs_truthful_pct,converged,rounds,report_x_father,report_x_mother,report_x_student
+Priority by claimed value,123.87,139.05,172.01,0.808,-12.3,True,3,1.5,3.0,3.0
+Proportional to claims,110.09,110.09,172.01,0.64,0.0,True,2,3.0,3.0,3.0
+VCG,172.01,172.01,172.01,1.0,0.0,True,1,1.0,1.0,1.0
+Random serial dictatorship,141.02,141.02,172.01,0.82,0.0,True,1,1.0,1.0,1.0

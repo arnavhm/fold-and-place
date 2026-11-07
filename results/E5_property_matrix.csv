@@ -1,0 +1,10 @@
+short,efficiency_pct,net_budget_surplus,below_proportional_share,max_envy_points,ef1_violations,profitable_lie_rate
+VCG,100.0,23.4,0,4.0,1.0,0.0
+VCG+Bailey,100.0,20.09,0,4.0,1.0,0.0
+Myerson,72.0,72.3,0,21.0,2.0,0.26
+RSD,82.0,0.0,0,45.0,2.167,0.0
+MNW,99.5,0.0,0,4.0,0.0,0.0
+Equal,61.0,0.0,0,13.0,0.0,0.0
+FCFS,73.7,0.0,0,7.0,0.0,0.0
+Proportional,64.0,0.0,0,15.0,1.0,0.45
+Priority,72.0,0.0,0,21.0,2.0,0.5333333333333333
