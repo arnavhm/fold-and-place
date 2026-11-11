@@ -1,0 +1,2 @@
+garment,plies,layer_thickness_mm,target_thickness_cm,k_loft,folded_w_cm,folded_l_cm,target_w_cm,target_l_cm,steps
+T-shirt size M (52 x 71 cm),18,0.6,1.27,1.1759259259259258,22.86,27.939999999999998,22.86,27.94,5

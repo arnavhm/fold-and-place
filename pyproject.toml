@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fold-and-place"
+version = "0.1.0"
+description = "Computer vision + mechanism design for wardrobes: fold, size and place every garment in a shared Indian almirah."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.26",
+    "shapely>=2.0",
+    "ortools>=9.10",
+    "pyyaml>=6.0",
+    "pandas>=2.0",
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+app = ["streamlit>=1.38"]
+vision = [
+    "torch>=2.2",
+    "open_clip_torch>=2.24",
+    "transformers>=4.44",
+    "rembg[cpu]>=2.0.57",
+    "opencv-python-headless>=4.9",
+    "scikit-learn>=1.4",
+    "pillow>=10.0",
+    "kaggle>=1.6",
+]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[tool.setuptools.packages.find]
+include = ["fold_and_place*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]

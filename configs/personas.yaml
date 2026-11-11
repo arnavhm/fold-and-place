@@ -1,0 +1,49 @@
+# Synthetic household for experiments and the demo.
+# These counts, values and wear frequencies are LABELLED ASSUMPTIONS, not survey data.
+#
+# Each item: [category, count, size, value_lo, value_hi, wears_per_month]
+#   value  : importance 1-10 to its owner (drawn uniformly between lo and hi with a fixed seed)
+#   wears  : how often it is worn, per month, per item
+
+personas:
+  student:
+    label: "Student"
+    shoulder_cm: 145        # golden zone top for this person
+    items:
+      - [tshirt,     8, L,  4, 8, 3]
+      - [shirt,      3, L,  5, 8, 1]
+      - [jeans,      3, L,  6, 9, 4]
+      - [trackpants, 2, L,  3, 6, 4]
+      - [shorts,     2, L,  2, 5, 4]
+      - [hoodie,     2, L,  5, 8, 1]
+      - [kurta_men,  1, L,  6, 9, 0.2]
+      - [innerwear,  7, L,  3, 5, 4]
+      - [socks,      6, M,  2, 4, 4]
+
+  mother:
+    label: "Mother"
+    shoulder_cm: 130
+    items:
+      - [saree,      6, M,  6, 10, 1]
+      - [blouse,     6, M,  5, 9,  1]
+      - [petticoat,  3, M,  4, 7,  2]
+      - [kurti,      5, M,  5, 8,  3]
+      - [salwar,     3, M,  4, 7,  3]
+      - [dupatta,    4, M,  4, 7,  2]
+      - [lehenga,    1, M,  9, 10, 0.1]
+      - [top,        2, M,  3, 6,  1]
+      - [innerwear,  5, M,  3, 5,  4]
+
+  father:
+    label: "Father"
+    shoulder_cm: 140
+    items:
+      - [shirt,      6, L,  5, 8,  3]
+      - [trousers,   4, L,  5, 8,  3]
+      - [tshirt,     3, L,  3, 6,  2]
+      - [kurta_men,  2, L,  5, 8,  0.5]
+      - [dhoti,      1, M,  6, 9,  0.2]
+      - [sherwani,   1, L,  8, 10, 0.05]
+      - [blazer,     1, L,  6, 9,  0.3]
+      - [innerwear,  5, L,  3, 5,  4]
+      - [socks,      5, M,  2, 4,  4]
