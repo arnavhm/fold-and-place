@@ -1,15 +1,16 @@
+PYTHON ?= python3
 PY ?= .venv/bin/python
 PIP ?= .venv/bin/pip
 
 .PHONY: setup setup-core data embeddings experiments app test lint smoke clean
 
 setup:            ## full install (core + dashboard + vision + dev tools)
-	python3 -m venv .venv
+	$(PYTHON) -m venv .venv
 	$(PIP) install --upgrade pip
 	$(PIP) install -e ".[app,vision,dev]"
 
 setup-core:       ## install without the heavy vision stack
-	python3 -m venv .venv
+	$(PYTHON) -m venv .venv
 	$(PIP) install --upgrade pip
 	$(PIP) install -e ".[app,dev]"
 
@@ -19,7 +20,7 @@ data:             ## download IndoFashion + Myntra samples from Kaggle (needs ~/
 embeddings:       ## embed sampled images with FashionSigLIP and train the classifier head
 	$(PY) scripts/build_embeddings.py
 
-experiments:      ## run E1-E8 and write results/
+experiments:      ## run E1-E7 and write results/
 	$(PY) scripts/run_experiments.py
 
 smoke:            ## quick check that the vision models load and run on bundled images
