@@ -31,8 +31,9 @@ INDO_SLUGS = ["validmodel/indo-fashion-dataset"]
 def _api():
     try:
         from kaggle.api.kaggle_api_extended import KaggleApi
-    except ImportError:
-        sys.exit("The 'kaggle' package is missing: run `make setup` (or pip install kaggle).")
+    except ImportError as exc:
+        sys.exit(f"Could not import the Kaggle API ({exc}). Run `make setup`, or install the missing module "
+                 f"into .venv (e.g. `.venv/bin/pip install {getattr(exc, 'name', None) or 'kaggle'}`).")
     api = KaggleApi()
     try:
         api.authenticate()
