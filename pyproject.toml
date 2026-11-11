@@ -29,7 +29,7 @@ vision = [
     "pillow>=10.0",
     "kaggle>=1.6",
 ]
-dev = ["pytest>=8.0", "ruff>=0.6"]
+dev = ["pytest>=8.0", "ruff>=0.6", "scikit-learn>=1.4", "pillow>=10.0"]
 
 [tool.setuptools.packages.find]
 include = ["fold_and_place*"]
