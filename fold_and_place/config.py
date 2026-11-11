@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from functools import cache
 from pathlib import Path
 from typing import Any
@@ -32,8 +33,23 @@ def fabrics() -> dict[str, dict[str, Any]]:
     return load("fabrics")["fabrics"]
 
 
+_K_LOFT_OVERRIDE: list[float] = []
+
+
 def k_loft() -> float:
+    if _K_LOFT_OVERRIDE:
+        return _K_LOFT_OVERRIDE[-1]
     return float(load("fabrics")["k_loft"])
+
+
+@contextmanager
+def override_k_loft(value: float):
+    """Temporarily change the loft factor (sensitivity analysis in E4)."""
+    _K_LOFT_OVERRIDE.append(float(value))
+    try:
+        yield
+    finally:
+        _K_LOFT_OVERRIDE.pop()
 
 
 def presets() -> dict[str, dict[str, Any]]:
