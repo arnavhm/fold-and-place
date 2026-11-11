@@ -1,0 +1,8 @@
+coalition,size,cheapest_wardrobe,cost_inr
+father,1,one_door,9000.0
+mother,1,two_door,16000.0
+student,1,one_door,9000.0
+father + mother,2,two_door,16000.0
+father + student,2,one_door,9000.0
+mother + student,2,two_door,16000.0
+father + mother + student,3,two_door,16000.0

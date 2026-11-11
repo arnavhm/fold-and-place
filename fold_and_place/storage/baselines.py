@@ -106,8 +106,14 @@ def b4_greedy(
     values: dict[str, float] | None = None,
     lam_reach: float = 1.0,
     lam_crease: float = 1.0,
+    prefer: str = "cost",
 ) -> Plan:
-    """Value-density greedy over the full option set; each garment takes its cheapest feasible spot."""
+    """Value-density greedy over the full option set.
+
+    prefer="cost" : each garment takes its cheapest feasible spot (reach + creases), then smallest.
+    prefer="space": each garment takes its most compact feasible fold first (better when space is
+                    scarce; used by the Myerson auction).
+    """
     opts = _opts(gs)
     val = {g.id: (values or {}).get(g.id, g.value) for g in gs}
     p = Packer(w, {g.id: g for g in gs})
@@ -123,7 +129,10 @@ def b4_greedy(
                 if fits(o, c):
                     cost = lam_reach * g.wear_freq * reach_cost(g, o, c) + lam_crease * g.crease_risk * o.creases
                     cands.append((cost, o.volume, o.id, o, c))
-        cands.sort(key=lambda t: t[:3])
+        if prefer == "space":
+            cands.sort(key=lambda t: (t[1], t[0], t[2]))
+        else:
+            cands.sort(key=lambda t: t[:3])
         for _, _, _, o, c in cands:
             if p.try_place(g, o, c):
                 break

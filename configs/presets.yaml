@@ -20,6 +20,14 @@
 
 golden_zone_cm: [55, 135]
 
+# Indicative prices (INR) used ONLY by the cost-sharing experiment E6. These are assumptions for a
+# mid-range engineered-wood almirah of each size, not quotes.
+prices_inr:
+  one_door: 9000
+  two_door: 16000
+  three_door: 24000
+  sliding: 34000
+
 presets:
   one_door:
     label: "1-door hinged (52 x 200 x 53 cm)"
@@ -85,13 +93,13 @@ presets:
       - {id: drawer_r, kind: drawer,     x: 120, z: 5,   w: 54,  h: 22, d: 50}
 
   compact_shared:
-    # A deliberately tight shared unit (hostel / PG locker style) used by the mechanism
-    # experiments: space is scarce, so who gets what actually matters.
-    label: "Compact shared locker (one shelf, short rail, drawer; 40 x 100 x 38 cm)"
-    width: 40
+    # A deliberately tight shared unit (one hostel / PG almirah section) used by the mechanism
+    # experiments: about 85% of a small household's clothes fit, so who gets what matters.
+    label: "Compact shared section (shelf, short rail, drawer; 45 x 100 x 38 cm)"
+    width: 45
     height: 100
     depth: 38
     compartments:
-      - {id: shelf,  kind: shelf,      x: 0, z: 80, w: 38, h: 14, d: 36}
-      - {id: rail,   kind: rail_short, x: 0, z: 25, w: 8,  h: 52, d: 38}
-      - {id: drawer, kind: drawer,     x: 0, z: 5,  w: 30, h: 12, d: 34}
+      - {id: shelf,  kind: shelf,      x: 0,  z: 80, w: 24, h: 14, d: 36}
+      - {id: rail,   kind: rail_short, x: 26, z: 25, w: 5,  h: 52, d: 38}
+      - {id: drawer, kind: drawer,     x: 0,  z: 5,  w: 18, h: 14, d: 32}
