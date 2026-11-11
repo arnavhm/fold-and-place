@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fold-and-place"
-version = "0.1.0"
+version = "0.5.0"
 description = "Computer vision + mechanism design for wardrobes: fold, size and place every garment in a shared Indian almirah."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-app = ["streamlit>=1.38"]
+app = ["streamlit>=1.50"]
 vision = [
     "torch>=2.2",
     "open_clip_torch>=2.24",
@@ -29,10 +29,13 @@ vision = [
     "pillow>=10.0",
     "kaggle>=1.6",
 ]
-dev = ["pytest>=8.0", "ruff>=0.6", "scikit-learn>=1.4", "pillow>=10.0"]
+dev = ["pytest>=8.0", "ruff>=0.6", "scikit-learn>=1.4", "pillow>=10.0", "streamlit>=1.50"]
 
 [tool.setuptools.packages.find]
 include = ["fold_and_place*"]
+
+[tool.setuptools.package-data]
+"fold_and_place.app" = ["static/*.js", "static/*.txt"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
