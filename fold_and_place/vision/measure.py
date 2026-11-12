@@ -97,14 +97,21 @@ def measure_upright(grid: np.ndarray, template: str, res_cm: float = 0.25) -> Me
     if template in ("tee", "dress"):
         body = float(np.median(band(0.6, 0.95)))
         if template == "dress":
-            body = float(np.median(band(0.2, 0.3)))
-            hem = float(np.median(band(0.95, 1.0)))
+            # chest: just below the armpit (where the sleeves end), as a tailor measures it
+            prof = widths[top : bot + 1]
+            n = len(prof)
+            upper = prof[: max(3, int(0.6 * n))]
+            drops = upper[:-1] - upper[1:]
+            a = int(np.argmax(drops)) + 1 if len(drops) and drops.max() > 0.08 * prof.max() else int(0.15 * n)
+            lo, hi = a + max(1, int(0.01 * n)), a + max(2, int(0.06 * n))
+            body = float(np.median(prof[lo:hi])) if hi > lo else float(prof[a])
+            hem = float(np.median(band(0.97, 1.0)))
         sleeve = max(0.0, (total_w - body) / 2) if total_w > body * 1.15 else 0.0
         return Measured(body, length, sleeve, hem if template == "dress" else None)
     if template == "trousers":
         return Measured(float(np.max(band(0.0, 0.15))), length)
     if template == "skirt":
-        return Measured(float(np.median(band(0.0, 0.1))), length, hem_w=float(np.median(band(0.9, 1.0))))
+        return Measured(float(np.percentile(band(0.0, 0.06), 90)), length, hem_w=float(np.median(band(0.97, 1.0))))
     return Measured(min(total_w, length), max(total_w, length))
 
 

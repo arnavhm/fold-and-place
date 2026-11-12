@@ -58,6 +58,9 @@ TEMPLATES = {"tee": tee, "dress": dress, "skirt": skirt, "trousers": trousers, "
 
 
 def outline(g: Garment) -> Polygon:
+    """The garment's own photographed outline when there is one, else its template."""
+    if g.outline:
+        return Polygon(g.outline)
     try:
         return TEMPLATES[g.template](g)
     except KeyError as exc:

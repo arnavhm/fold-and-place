@@ -4,7 +4,12 @@
 2. mask: rembg for flat-lay, SegFormer clothes parser for worn photos, plain-background fallback
 3. category: zero-shot FashionSigLIP, averaged with the trained head when one exists
 4. fabric and embellishment, zero-shot
-5. size: marker -> size chart -> fabric standard (see measure.py), with the source recorded
+5. size, with the source recorded:
+   - a reference in the photo (an A4 sheet or ArUco marker, found automatically) -> measured;
+   - a flat-lay photo without one -> the garment's own proportions, scaled to the size label's
+     chart length ("approx");
+   - worn photos -> size chart; drapes -> fabric standard.
+   The garment is turned upright first, and its outline (cm) is kept so we fold *this* garment.
 Every component is injectable, so tests run with fakes and no model downloads.
 """
 
@@ -18,7 +23,7 @@ import numpy as np
 from fold_and_place import config
 from fold_and_place.garments.record import Garment, make_garment
 from fold_and_place.vision import labels as L
-from fold_and_place.vision.measure import measure_with_marker, size_from_chart
+from fold_and_place.vision.measure import drop_marker, homography, size_from_chart
 from fold_and_place.vision.models import (
     Embedder,
     FlatSegmenter,
@@ -28,9 +33,18 @@ from fold_and_place.vision.models import (
     ensemble,
     zero_shot,
 )
+from fold_and_place.vision.reference import find_reference, main_part
+from fold_and_place.vision.shape import silhouette
 
 HEAD_PATH = config.ROOT / "models" / "head.npz"
-SIZE_CONFIDENCE = {"marker": 0.9, "fabric_standard": 0.7, "size_chart": 0.6}
+SIZE_CONFIDENCE = {"marker": 0.9, "fabric_standard": 0.7, "size_chart": 0.6, "approx": 0.6}
+SOURCE_TEXT = {
+    "marker": "measured from the photo (reference sheet found)",
+    "approx": "approximate: the photo's proportions, scaled to the size label",
+    "size_chart": "from the size chart for the label size",
+    "fabric_standard": "standard fabric size for this garment",
+    "manual": "entered by hand",
+}
 
 
 @dataclass
@@ -46,6 +60,20 @@ class Guess:
     confidence: float
     sleeve_len: float | None = None
     mask: np.ndarray | None = field(default=None, repr=False)
+    outline: list[tuple[float, float]] | None = None
+    reference: tuple[np.ndarray, np.ndarray, str] | None = field(default=None, repr=False)
+    upright: np.ndarray | None = field(default=None, repr=False)  # top-down mask, ``upright_res`` cm/cell
+    upright_res: float = 0.5
+    hem_w: float | None = None
+
+    @property
+    def source_text(self) -> str:
+        return SOURCE_TEXT.get(self.size_source, self.size_source)
+
+    @property
+    def needs_check(self) -> bool:
+        """Ask the person to confirm: unsure category, or a size that is only approximate."""
+        return self.confidence < 0.45 or (len(self.top3) > 1 and self.top3[0][1] - self.top3[1][1] < 0.15)
 
     def to_garment(self, gid: str, owner: str = "", value: float = 5.0, wear_freq: float = 1.0, size: str = "M") -> Garment:
         g = make_garment(
@@ -61,9 +89,12 @@ class Guess:
             flat_l=self.flat_l,
             size_source=self.size_source,
             confidence=self.confidence,
+            outline=self.outline,
         )
         if self.sleeve_len is not None and g.template in ("tee", "dress"):
             g.sleeve_len = self.sleeve_len
+        if self.hem_w and g.template in ("dress", "skirt"):
+            g.hem_w = round(float(self.hem_w), 1)
         return g
 
 
@@ -104,17 +135,30 @@ class Analyzer:
             pass
         return self.fallback_seg(img)
 
-    def analyse(self, img, size: str = "M", marker: tuple[np.ndarray, np.ndarray] | None = None) -> Guess:
+    def analyse(self, img, size: str = "M", marker: tuple[np.ndarray, np.ndarray] | None = None,
+                auto_reference: bool = True, category: str | None = None) -> Guess:
+        """``marker``: known reference corners (px, cm); otherwise one is looked for in the photo.
+        ``category``: skip classification (the person corrected it)."""
         emb = self.embedder.images([img])
         photo_type, _ = self._pick(emb, "photo", L.PHOTO_TYPE_PROMPTS)
+        ref = None
+        if marker is not None:
+            ref = (np.asarray(marker[0], float), np.asarray(marker[1], float), "given")
+        elif auto_reference:
+            ref = find_reference(img)
+        if ref is not None:
+            photo_type = "flat"  # a sheet of paper on the floor means a flat-lay photo
 
         labs, bank = self._bank("category", L.category_prompts())
         zs = zero_shot(emb, bank)
         hp = self.head.proba(emb) if self.head is not None else None
         p = ensemble(zs, labs, self.head, hp)[0]
         order = np.argsort(-p)
-        category = labs[int(order[0])]
         top3 = [(labs[int(i)], float(p[int(i)])) for i in order[:3]]
+        if category is None:
+            category = labs[int(order[0])]
+        else:
+            top3 = [(category, 1.0)] + [t for t in top3 if t[0] != category][:2]
 
         fabric, _ = self._pick(emb, "fabric", L.FABRIC_PROMPTS)
         embellish, _ = self._pick(emb, "embellish", L.EMBELLISH_PROMPTS)
@@ -123,12 +167,26 @@ class Analyzer:
             embellish = "heavy"  # a bridal lehenga / sherwani is assumed heavy unless clearly plain
 
         mask = self._mask(img, photo_type)
-        sleeve = None
-        if marker is not None and photo_type == "flat":
-            m = measure_with_marker(mask, marker[0], marker[1], cat_cfg["template"])
-            flat_w, flat_l, source = m.flat_w, m.flat_l, "marker"
-            sleeve = m.sleeve_len
+        if ref is not None:
+            side = np.linalg.norm(ref[0][1] - ref[0][0])
+            mask = drop_marker(mask, ref[0], grow_px=max(6.0, 0.05 * side))
+        mask = main_part(mask)
+        sleeve, outline, upright, res, hem = None, None, None, 0.5, None
+        chart = make_garment(category, "probe", size)
+        if photo_type == "flat" and mask.any():
+            H = homography(ref[0], ref[1]) if ref is not None else None
+            try:
+                sil = silhouette(mask, cat_cfg["template"], H, length_cm=chart.flat_l)
+                flat_w, flat_l = round(float(sil.measured.flat_w), 1), round(float(sil.measured.flat_l), 1)
+                sleeve = round(float(sil.measured.sleeve_len), 1) if sil.measured.sleeve_len else None
+                hem = sil.measured.hem_w
+                outline, upright, res = sil.outline, sil.grid, sil.res
+                source = "marker" if ref is not None else ("fabric_standard" if chart.is_drape else "approx")
+            except ValueError:  # an impossible size: wrong reference, fall back
+                flat_w, flat_l, source = size_from_chart(category, size, mask, photo_type)
+                ref = None
         else:
             flat_w, flat_l, source = size_from_chart(category, size, mask, photo_type)
         conf = float(top3[0][1]) * SIZE_CONFIDENCE[source]
-        return Guess(category, top3, photo_type, fabric, embellish, flat_w, flat_l, source, round(conf, 3), sleeve, mask)
+        return Guess(category, top3, photo_type, fabric, embellish, flat_w, flat_l, source, round(conf, 3), sleeve,
+                     mask, outline, ref, upright, res, hem)
