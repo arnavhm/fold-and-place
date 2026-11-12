@@ -123,6 +123,7 @@ def solve(
     objective: str = "welfare",
     owner: str | None = None,
     floors: dict[str, int] | None = None,
+    allowed: dict[str, set[str]] | None = None,
 ) -> Plan:
     """Optimal (or best found within the time limit) plan. ``values`` overrides garment values
     (used by the mechanisms, where values are what people REPORT).
@@ -136,6 +137,9 @@ def solve(
 
     With ``cfg.warm_start=False`` the set of possible plans depends only on garment geometry,
     never on the values - required for the VCG mechanism to be truthful.
+
+    ``allowed`` (garment id -> compartment ids) restricts where a garment may go: household rules
+    such as personal shelves or packing winter clothes away (see storage/rules.py).
     """
     cfg = cfg or SolveConfig()
     t0 = time.time()
@@ -163,7 +167,11 @@ def solve(
         for cid, n in counts.items():
             seed_lanes[cid] = max(seed_lanes.get(cid, 0), n)
 
-    useful = {(g.id, c.id): _useful(options[g.id], c) for g in gs for c in w.compartments}
+    useful = {
+        (g.id, c.id): (_useful(options[g.id], c) if allowed is None or g.id not in allowed or c.id in allowed[g.id] else [])
+        for g in gs
+        for c in w.compartments
+    }
 
     # ---- lanes per compartment -------------------------------------------------------------
     lanes: list[tuple[str, str, int]] = []  # (compartment id, layout, index)

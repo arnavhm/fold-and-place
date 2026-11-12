@@ -142,15 +142,15 @@ with tab_list:
         st.caption(" · ".join(f"{k} × {v}" for k, v in sorted(summary.items(), key=lambda t: -t[1])))
     per_page = 24
     pages = max(1, (len(shown) + per_page - 1) // per_page)
-    page = st.number_input("Page", 1, pages, 1, label_visibility="collapsed") if pages > 1 else 1
+    page = st.number_input(f"Page (of {pages})", 1, pages, 1, width=160) if pages > 1 else 1
     chunk = shown[(page - 1) * per_page : page * per_page]
     for row in range(0, len(chunk), 6):
         cols = st.columns(6)
         for col, g in zip(cols, chunk[row : row + 6]):
             with col, st.container(border=True):
-                src = {"marker": "📏 measured", "approx": "≈ estimated", "size_chart": "size chart", "fabric_standard": "standard size", "manual": "entered"}.get(g.size_source, "")
+                src = {"marker": "📏 measured", "approx": "≈ estimated"}.get(g.size_source, "")
                 ui.raw(f'<div style="display:flex;gap:.5rem;align-items:center">{ui.thumb(g, 46)}<div><b>{g.label}</b><br>{ui.chip(g.owner)}</div></div>'
-                        f'<div class="fp-soft" style="margin-top:.35rem">worn {ui.wear_words(g.wear_freq)}<br>matters {ui.value_dots(g.value)}<br>{g.flat_w:.0f}×{g.flat_l:.0f} cm · {src}</div>')
+                        f'<div class="fp-soft" style="margin-top:.35rem">worn {ui.wear_words(g.wear_freq)}<br>matters {ui.value_dots(g.value)}<br>{g.flat_w:.0f}×{g.flat_l:.0f} cm {src}</div>')
                 with st.popover("Edit", width="stretch"):
                     v = st.select_slider("Matters", list(range(1, 11)), value=int(round(g.value)), key=f"ev_{g.id}")
                     f = st.select_slider("Worn", list(ui.WEAR_OPTIONS), value=ui.nearest_wear(g.wear_freq), key=f"ef_{g.id}")

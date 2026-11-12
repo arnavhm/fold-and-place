@@ -2,7 +2,7 @@
 
 Scenario: compact shared section, 36 garments, 3 people; optimal welfare
 172.01 points. Exact CP-SAT solves with a value-independent option set
-(warm_start off), so VCG's truthfulness argument applies. 359 solves, 74.2 s.
+(warm_start off), so VCG's truthfulness argument applies. 359 solves, 99.2 s.
 
 | Mechanism | Welfare vs optimum | Net credits kept | People below proportional share | Max envy (points) | EF1 violations |
 |---|---|---|---|---|---|
@@ -10,7 +10,7 @@ Scenario: compact shared section, 36 garments, 3 people; optimal welfare
 | VCG+Bailey | 100.0% | 20.09 | 0 | 4.0 | 1.0 |
 | Myerson | 72.0% | 72.3 | 0 | 21.0 | 2.0 |
 | RSD | 82.0% | 0.0 | 0 | 45.0 | 2.167 |
-| MNW | 99.5% | 0.0 | 0 | 4.0 | 0.0 |
+| MNW | 99.9% | 0.0 | 0 | 4.0 | 0.0 |
 | Equal | 61.0% | 0.0 | 0 | 13.0 | 0.0 |
 | FCFS | 73.7% | 0.0 | 0 | 7.0 | 0.0 |
 | Proportional | 64.0% | 0.0 | 0 | 15.0 | 1.0 |

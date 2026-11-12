@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-app = ["streamlit>=1.50"]
+app = ["streamlit>=1.50", "opencv-python-headless>=4.8", "scipy>=1.11", "pillow>=10.0"]  # measuring from photos needs no big models
 vision = [
     "torch>=2.2",
     "open_clip_torch>=2.24",
@@ -30,7 +30,7 @@ vision = [
     "kaggle>=1.6",
     "six",  # kaggle 2.2.x imports six without declaring it
 ]
-dev = ["pytest>=8.0", "ruff>=0.6", "scikit-learn>=1.4", "pillow>=10.0", "streamlit>=1.50"]
+dev = ["pytest>=8.0", "ruff>=0.6", "scikit-learn>=1.4", "pillow>=10.0", "streamlit>=1.50", "opencv-python-headless>=4.8", "scipy>=1.11"]
 
 [tool.setuptools.packages.find]
 include = ["fold_and_place*"]

@@ -10,6 +10,7 @@ from fold_and_place.app import fold3d, state, ui
 from fold_and_place.storage.baselines import BASELINES
 from fold_and_place.storage.checker import check
 from fold_and_place.storage.model import SolveConfig, solve
+from fold_and_place.storage.rules import Rules, is_heavy, is_winter
 
 ui.setup("Your plan", "plan")
 w, gs = state.wardrobe(), state.garments()
@@ -17,6 +18,8 @@ if not gs:
     st.info("Add some clothes first.")
     st.page_link("views/clothes.py", label="Go to your clothes", icon=":material/arrow_forward:")
     st.stop()
+
+rules: Rules = st.session_state.setdefault("rules", Rules())
 
 MODE_WORDS = {"flat": "fold and stack", "file": "fold and stand on its edge", "roll": "roll", "hang": "hang"}
 NAMES = {"opt": "This plan", "B1": "The usual way (flat stacks)", "B2": "KonMari filing", "B3": "Hang everything", "B4": "Quick greedy rule"}
@@ -26,7 +29,8 @@ def plan_key() -> str:
     blob = json.dumps([[g.id, g.category, g.owner, g.value, g.wear_freq, g.flat_w, g.flat_l, g.outline is not None] for g in gs]
                       + [[c.id, c.kind, c.x, c.z, c.w, c.h, c.d] for c in w.compartments]
                       + [[k, p["height_cm"]] for k, p in st.session_state.people.items()]
-                      + [st.session_state.get("lams", (1.0, 1.0))])
+                      + [st.session_state.get("lams", (1.0, 1.0))]
+                      + [[rules.pack_winter, rules.heavy_low, sorted((k, sorted(v)) for k, v in rules.personal.items())]])
     return hashlib.md5(blob.encode()).hexdigest()
 
 
@@ -35,7 +39,8 @@ if st.session_state.get("plan_key") != key:
     lam_r, lam_c = st.session_state.get("lams", (1.0, 1.0))
     with st.spinner(f"Working out the best fold and place for {len(gs)} clothes..."):
         plans = {k: (f(gs, w, lam_reach=lam_r, lam_crease=lam_c) if k == "B4" else f(gs, w)) for k, f in BASELINES.items()}
-        plans["opt"] = solve(gs, w, cfg=SolveConfig(time_limit_s=30, workers=state.workers(), lam_reach=lam_r, lam_crease=lam_c))
+        plans["opt"] = solve(gs, w, cfg=SolveConfig(time_limit_s=30, workers=state.workers(), lam_reach=lam_r, lam_crease=lam_c),
+                             allowed=rules.allowed(gs, w))
     st.session_state.plans = plans
     st.session_state.plan = plans["opt"]
     st.session_state.plan_key = key
@@ -62,6 +67,26 @@ ui.big_numbers([
 ])
 st.caption("“The usual way” = every garment folded flat in stacks, shelves filled top to bottom. "
            "Reaching and bending counts how often you reach outside your easy-reach band, weighted by how often you wear each thing.")
+
+with st.expander("House rules" + (" (on)" if rules.active() else ""), icon=":material/rule:"):
+    n_w = sum(is_winter(g) for g in gs)
+    n_h = sum(is_heavy(g) for g in gs)
+    c1, c2 = st.columns(2)
+    pw = c1.toggle(f"Pack winter clothes away ({n_w})", rules.pack_winter, help="Hoodies, sweaters, jackets, wool: loft or hard-to-reach space only.")
+    hl_ = c2.toggle(f"Heavy things never in the loft ({n_h})", rules.heavy_low, help="Denim, heavy wool, suiting, heavy embroidery.")
+    own = st.toggle("Give people their own spaces", any(rules.personal.values()))
+    personal = {}
+    if own:
+        names = {c.id: ui.compartment_name(c, w) for c in w.compartments}
+        cols = st.columns(max(1, len(st.session_state.people)))
+        for col, k in zip(cols, st.session_state.people):
+            personal[k] = set(col.multiselect(ui.person_label(k), list(names), default=sorted(rules.personal.get(k, set()) & set(names)),
+                                             format_func=names.get, key=f"own_{k}"))
+        st.caption("Spaces nobody claims stay shared.")
+    new_rules = Rules(personal=personal, pack_winter=pw, heavy_low=hl_)
+    if new_rules != rules:
+        st.session_state.rules = new_rules
+        st.rerun()
 
 view = st.segmented_control("Show", list(NAMES), default="opt", format_func=lambda k: NAMES[k], key="plan_view")
 shown = plans[view or "opt"]

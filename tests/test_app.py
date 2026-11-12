@@ -69,12 +69,16 @@ PAGES = ["views/wardrobe.py", "views/clothes.py", "views/plan.py", "views/sharin
 def test_every_page_renders():
     testing = pytest.importorskip("streamlit.testing.v1")
     from fold_and_place.config import ROOT
+    from fold_and_place.storage import wardrobe
 
-    at = testing.AppTest.from_file(str(ROOT / "fold_and_place" / "app" / "app.py"), default_timeout=240).run()
-    assert not at.exception, [e.value for e in at.exception]
-    for page in PAGES:
-        at.switch_page(page).run()
-        assert not at.exception, (page, [e.value for e in at.exception])
+    try:
+        at = testing.AppTest.from_file(str(ROOT / "fold_and_place" / "app" / "app.py"), default_timeout=240).run()
+        assert not at.exception, [e.value for e in at.exception]
+        for page in PAGES:
+            at.switch_page(page).run()
+            assert not at.exception, (page, [e.value for e in at.exception])
+    finally:
+        wardrobe.SHOULDER_CM.clear()  # the app sets people's heights process-wide
 
 
 def test_printable_plan_lists_every_stored_garment():

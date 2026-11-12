@@ -20,7 +20,7 @@ data:             ## download IndoFashion + Myntra samples from Kaggle (needs ~/
 embeddings:       ## embed sampled images with FashionSigLIP and train the classifier head
 	$(PY) scripts/build_embeddings.py
 
-experiments:      ## run E1-E7 and write results/
+experiments:      ## run E1-E8 and write results/
 	$(PY) scripts/run_experiments.py
 
 smoke:            ## quick check that the vision models load and run on bundled images

@@ -57,7 +57,10 @@ with right:
             if not r.get("Name"):
                 continue
             k = r.get("key") if isinstance(r.get("key"), str) and r.get("key") else f"p{i}_{str(r['Name']).lower().replace(' ', '_')}"
-            new[k] = {"label": str(r["Name"]), "height_cm": float(r.get("Height (cm)") or 165)}
+            h = float(r.get("Height (cm)") or 165)
+            old = ppl.get(k, {})
+            sh = old.get("shoulder_cm") if old.get("height_cm") == h and old.get("shoulder_cm") else round(h * state.SHOULDER_RATIO, 1)
+            new[k] = {"label": str(r["Name"]), "height_cm": h, "shoulder_cm": sh}
         if new:
             st.session_state.people = new
             state.apply_people()

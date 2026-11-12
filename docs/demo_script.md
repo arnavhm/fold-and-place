@@ -1,7 +1,7 @@
 # Demo recording script (about 6 minutes)
 
-Record the screen with **QuickTime → File → New Screen Recording** (or ⌘⇧5), browser at full
-screen, zoom 90%. Speak the lines in *italics* or paraphrase them.
+Record with **QuickTime → File → New Screen Recording** (or ⌘⇧5), browser full screen, zoom 90%.
+Say the lines in *italics*, or something like them.
 
 ## Before recording
 
@@ -10,92 +10,73 @@ cd fold-and-place
 make app            # opens http://localhost:8501
 ```
 
-* Open the **Plan** page once and press **Solve and compare with baselines** so the solver is warm
-  (about 30 s on the first run), then go back to **Home**.
-* Close other tabs; turn on Do Not Disturb.
+- Click through **3 · Your plan** once (it plans in a few seconds) and **4 · Sharing fairly** once
+  (it sets up the shared section), then go back to **Start**.
+- Have 1-2 of your own garment photos with an A4 sheet ready in a folder.
+- Close other tabs; turn on Do Not Disturb.
 
-## 0:00 - Home (30 s)
+## 0:00 - Start (20 s)
 
-*"Fold & Place answers three questions for a family's shared wardrobe: how to fold each garment,
-where to put it, and how to share the space fairly when everyone says their clothes matter most.
-It has four stages: see, fold, place, share."*
+*"Fold & Place: photograph your clothes and it works out how to fold each one, where it goes in
+your almirah, and how to share the space fairly when everyone thinks their clothes matter most.
+Four steps."* Click **Use the demo family**.
 
-Point at the four headline numbers.
+## 0:20 - 1 · Your wardrobe (30 s)
 
-## 0:30 - Wardrobe (30 s)
+*"Typical Indian almirahs. I'll keep the two-door. The yellow bar is the easy-reach band - knee to
+shoulder height - and it follows each person's height."* Point at *Who uses it?*. Click **Next**.
 
-Open **Wardrobe**. Switch the preset from *2-door* to *3-door*, then back.
+## 0:50 - 2 · Your clothes: the real-photo part (90 s)
 
-*"These are typical Indian almirah layouts: loft on top, hanging rail, shelves, drawers. The yellow
-band is the golden zone - the height you can reach without bending or a stool. Each person's upper
-limit is their own shoulder height."*
+*"The demo family has 97 clothes, but the point is adding your own from a photo."*
+**Upload** one of your photos (garment flat, A4 sheet beside it).
 
-## 1:00 - Garments (45 s)
+*"It recognises the garment, finds the A4 sheet by itself - green - cuts out the garment - orange -
+straightens the view and turns the garment upright, whatever angle I shot it at. Then it measures:
+52 by 71 centimetres. No tape measure. And it keeps the garment's real outline, so the fold
+animation later folds this exact garment."*
 
-Open **Garments**. Scroll the table briefly.
+Set *Whose is it*, *Worn*, *How much does it matter*, click **Add to the wardrobe**.
 
-*"The demo family - a student, a mother and a father - owns 97 garments, Indian and Western:
-sarees, kurtis, a lehenga, jeans, shirts. Values and wear rates are stated assumptions."*
+Optional: **Sample photos → Trousers (no A4 sheet)**. *"Without a sheet it still works, but it says
+so: the size is scaled to the label, an estimate."*
 
-Switch to **Add from a photo** → *Sample* → `kurti_M.png` → **Analyse**.
+Open **Everyone's clothes** for two seconds - your photo appears as a card. Click **Next**.
 
-*"From a photo, a fashion-tuned vision model classifies the garment, a segmenter cuts it out, and
-the A4 sheet in the frame gives real-world scale through a homography. Here the true size is
-known, so you can see the error."*
-(If the vision models are not installed, say: *"This needs the vision install; the measurements
-are evaluated in experiment E3."* and move on.)
+## 2:20 - 3 · Your plan (75 s)
 
-## 1:45 - Plan (75 s)
+*"Every garment gets one fold and one place - stacks on shelves, rows standing on edge in drawers,
+hangers on the rail - from an exact optimisation model."* Point at the four numbers:
+*"Everything fits, about a quarter less reaching and bending than folding everything flat in stacks,
+70% fewer creases, and the solver proves this is the best possible."*
 
-Open **Plan**, press **Solve and compare with baselines**.
+Click a shelf in **Look inside**, then **Watch** on a garment: the 3D fold plays. Close it.
+Open **House rules**, switch on **Pack winter clothes away**: *"house rules re-plan instantly."*
+Mention **Printable plan**. Click **Next**.
 
-*"Four rules of thumb - traditional flat stacks, KonMari filing, hang everything, and a greedy rule -
-against an exact constraint-programming model. Every garment gets one fold and one place; the
-objective stores as much value as possible, then puts frequently worn clothes in easy reach, then
-avoids creasing delicate fabrics."*
+## 3:35 - 4 · Sharing fairly (100 s)
 
-Point at the metrics: *"Same 97 garments stored, about a quarter less effort to reach things and
-about two-thirds fewer creases than flat stacks - and the solver proves it is optimal."*
+*"Now the game theory. Three people share one small section: 36 clothes, room for about 31. Each
+person knows how much their own clothes matter - private information - and could exaggerate."*
 
-Click a saree row in the table: *"Every placement comes with a reason. Let's watch this one fold."*
+Point at the four rule cards with **Nobody** selected: *"Equal split wastes space. 'Pay for what you
+push out' - that's VCG - uses all of it; payments are chore credits."*
 
-## 3:00 - Fold studio (60 s)
+Click **Mother**, keep **×3**. *"Mother claims her clothes matter three times more. Under 'loudest
+claim wins' - what a family would naturally do - that pays off, so everyone would start lying.
+Under VCG and taking turns, lying changes nothing: honesty is the best policy."*
 
-Open **Fold studio** (the selected garment is preselected; the plan's fold is marked ★).
+Scroll to **What if two people team up?**, click **Search joint lies**: *"But VCG isn't safe against
+pairs - two people understating together pay less. Taking turns is much harder to game."*
 
-Let the animation play. *"The fold is exact polygon geometry: each step turns part of the garment
-over a crease. The packet size, number of plies and creases feed the optimizer."*
+## 5:15 - Behind the scenes (30 s)
 
-Switch to **Any category** → *Saree*, play it: *"A saree is halved lengthwise, then accordion-folded
-into panels."* Drag to orbit once.
-
-## 4:00 - Mechanism lab (90 s)
-
-Open **Mechanism lab**. Expand *The scenario* for a second.
-
-*"Now the game theory. Three people share one small section and not everything fits. Each knows
-how much their own clothes matter - a private value - and reports a number. The mechanism decides."*
-
-Press **Run** with everyone truthful. *"VCG picks the welfare-maximising plan and charges each
-person the harm they do to the others. Random serial dictatorship uses no money. Maximum Nash
-welfare targets fairness."*
-
-Move **Student claims x true value** to **3.0**, press **Run**.
-
-*"Now the student triples every value. Under VCG the lie costs them twelve points; under 'priority
-by claimed value' - what a family would naturally do - it gains them twenty-three. That is why the
-mechanism matters."*
-
-## 5:30 - Experiments (30 s)
-
-Open **Experiments**, click through E4, E5, E6.
-
-*"Seven experiments back the numbers: fold calibration, measurement error, optimizer against
-rules of thumb, mechanism properties under thousands of lies, Shapley cost sharing for buying a
-shared wardrobe, and the price of anarchy when everyone games the system. All code and results are
-on GitHub."*
+Open **Experiments**, click E3 and E5: *"Eight experiments back the numbers: fold calibration,
+measuring on realistic and real photos, the optimizer against rules of thumb, thousands of lies per
+sharing rule, cost-sharing for buying a shared wardrobe, and what happens when everyone games the
+rule. Everything is on GitHub."*
 
 ## After recording
 
-Trim the start and end in QuickTime (⌘T), export 1080p, and upload it (YouTube unlisted or Drive)
-to link from the submission.
+Trim the ends in QuickTime (⌘T), export 1080p, and upload it (YouTube unlisted or Drive) to link
+from the submission.

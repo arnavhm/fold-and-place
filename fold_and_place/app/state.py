@@ -22,7 +22,8 @@ SHOULDER_RATIO = 0.82  # shoulder height / standing height (adult anthropometry,
 def demo_people() -> dict[str, dict]:
     out = {}
     for k, p in config.personas().items():
-        out[k] = {"label": p["label"], "height_cm": round(p.get("shoulder_cm", 140) / SHOULDER_RATIO)}
+        sh = float(p.get("shoulder_cm", 140))
+        out[k] = {"label": p["label"], "height_cm": round(sh / SHOULDER_RATIO), "shoulder_cm": sh}
     return out
 
 
@@ -62,7 +63,7 @@ def reset_plans() -> None:
 def apply_people() -> None:
     wardrobe_mod.SHOULDER_CM.clear()
     for k, p in st.session_state.people.items():
-        wardrobe_mod.SHOULDER_CM[k] = float(p["height_cm"]) * SHOULDER_RATIO
+        wardrobe_mod.SHOULDER_CM[k] = float(p.get("shoulder_cm") or float(p["height_cm"]) * SHOULDER_RATIO)
 
 
 def wardrobe() -> Wardrobe:
