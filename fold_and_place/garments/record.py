@@ -11,7 +11,7 @@ from typing import Any
 
 from fold_and_place import config
 
-SIZE_SOURCES = ("marker", "size_chart", "fabric_standard", "manual")
+SIZE_SOURCES = ("marker", "approx", "size_chart", "fabric_standard", "manual")
 
 
 @dataclass
@@ -40,6 +40,7 @@ class Garment:
     size_source: str = "size_chart"
     confidence: float = 1.0
     image: str | None = None
+    outline: tuple[tuple[float, float], ...] | None = None  # cm, hem at y=0, from a photo
     extra: dict[str, Any] = field(default_factory=dict)
 
     # ----- derived properties -----------------------------------------------------------
@@ -100,6 +101,7 @@ def make_garment(
     size_source: str | None = None,
     confidence: float = 1.0,
     image: str | None = None,
+    outline=None,
 ) -> Garment:
     """Build a garment from its category defaults, scaled to ``size``.
 
@@ -145,5 +147,6 @@ def make_garment(
         size_source=src,
         confidence=float(confidence),
         image=image,
+        outline=None if outline is None else tuple((float(x), float(y)) for x, y in outline),
         extra={"drape": drape},
     )

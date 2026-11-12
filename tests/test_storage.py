@@ -98,3 +98,25 @@ def test_k_loft_override_changes_thickness():
     with config.override_k_loft(config.k_loft() * 1.3):
         thick = max(o.h for o in generate_options(make_garment("jeans", "j-loft2")) if o.mode == "flat")
     assert thick == pytest.approx(base * 1.3, rel=1e-6)
+
+
+def test_house_rules_are_respected():
+    from fold_and_place.garments import household_garments
+    from fold_and_place.storage import load_preset
+    from fold_and_place.storage.model import SolveConfig, solve
+    from fold_and_place.storage.rules import Rules, is_heavy, is_winter
+
+    gs = household_garments()
+    w = load_preset("three_door")
+    shelves = sorted(c.id for c in w.compartments if c.kind == "shelf")
+    rules = Rules(personal={"student": set(shelves[:2])}, pack_winter=True, heavy_low=True)
+    p = solve(gs, w, cfg=SolveConfig(time_limit_s=20, workers=2), allowed=rules.allowed(gs, w))
+    others = set().union(*rules.personal.values())
+    for gid in p.stored:
+        g, c = p.garments[gid], p.compartment_of(gid)
+        if is_winter(g):
+            assert c.kind == "loft" or c.zone_cost() > 1.0
+        if is_heavy(g):
+            assert c.kind != "loft"
+        if g.owner != "student":
+            assert c.id not in others

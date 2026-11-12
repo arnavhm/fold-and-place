@@ -20,6 +20,7 @@ EXPERIMENTS = {
     "E5": "fold_and_place.experiments.e5_mechanisms",
     "E6": "fold_and_place.experiments.e6_shapley",
     "E7": "fold_and_place.experiments.e7_poa",
+    "E8": "fold_and_place.experiments.e8_real",
 }
 
 

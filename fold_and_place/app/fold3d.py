@@ -175,7 +175,7 @@ def html(g: Garment, steps: list[FoldStep], *, colour: str = "#d9a75f", height: 
 
 
 _TEMPLATE = r"""<!DOCTYPE html><html><head><meta charset="utf-8"><style>
-html,body{margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#faf8f4}
+html,body{margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#ffffff}
 #wrap{position:relative;width:100%;height:__H__px}
 #cv{width:100%;height:100%;display:block;border-radius:10px}
 #bar{position:absolute;left:10px;right:10px;bottom:10px;display:flex;gap:8px;align-items:center;
@@ -204,7 +204,7 @@ for (const st of D.steps){
 }
 const cv = document.getElementById('cv');
 const R = new THREE.WebGLRenderer({canvas:cv, antialias:true}); R.setPixelRatio(window.devicePixelRatio);
-const scene = new THREE.Scene(); scene.background = new THREE.Color(0xfaf8f4);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0xffffff);
 const cam = new THREE.PerspectiveCamera(40, 1, 0.5, 5000);
 const ctl = new THREE.OrbitControls(cam, cv); ctl.enableDamping = true;
 scene.add(new THREE.HemisphereLight(0xffffff, 0x9a8a70, 0.85));

@@ -116,9 +116,23 @@ class PlainSegmenter:
 
     def __call__(self, img) -> np.ndarray:
         a = np.asarray(img.convert("RGB"), dtype=float)
-        border = np.concatenate([a[0], a[-1], a[:, 0], a[:, -1]])
+        k = max(2, min(a.shape[:2]) // 50)  # a band around the edge: the bedsheet / floor
+        border = np.concatenate([a[:k].reshape(-1, 3), a[-k:].reshape(-1, 3), a[:, :k].reshape(-1, 3), a[:, -k:].reshape(-1, 3)])
         bg = np.median(border, axis=0)
-        return np.linalg.norm(a - bg, axis=2) > self.threshold
+        spread = np.median(np.linalg.norm(border - bg, axis=1))
+        d = np.linalg.norm(a - bg, axis=2)
+        # threshold: Otsu on the distance image, but never inside the bedsheet's own texture
+        hist, edges = np.histogram(d, bins=128)
+        mids = (edges[:-1] + edges[1:]) / 2
+        w0 = np.cumsum(hist)
+        w1 = w0[-1] - w0
+        m0 = np.cumsum(hist * mids) / np.maximum(w0, 1)
+        m1 = (np.sum(hist * mids) - np.cumsum(hist * mids)) / np.maximum(w1, 1)
+        otsu = mids[int(np.argmax(w0 * w1 * (m0 - m1) ** 2))]
+        t = max(self.threshold * 0.6, 4 * spread, min(otsu, self.threshold * 1.5))
+        from fold_and_place.vision.reference import clean_mask
+
+        return clean_mask(d > t)
 
 
 def softmax(z: np.ndarray, temp: float = 1.0) -> np.ndarray:

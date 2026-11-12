@@ -263,7 +263,7 @@ def _signature(g: Garment) -> tuple:
     return (
         g.template, round(g.flat_w, 2), round(g.flat_l, 2), g.fabric, g.base_layers,
         round(g.sleeve_len, 2), round(g.sleeve_w, 2), g.hem_w, g.rise, g.embellish,
-        g.can_hang, g.hang_only, g.rod_in, g.hang_drop, g.is_drape, config.k_loft(),
+        g.can_hang, g.hang_only, g.rod_in, g.hang_drop, g.is_drape, config.k_loft(), g.outline,
     )
 
 

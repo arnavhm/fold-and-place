@@ -59,8 +59,80 @@ def synth(category: str, size: str, rng: np.random.Generator, noise_px: float):
     return g, mask, img_sheet, sheet_cm
 
 
+REAL_CASES = ["tshirt", "shirt", "jeans", "trousers", "skirt", "kurti", "dress", "palazzo", "kurta_men"]
+
+
+def realistic(d, per_case: int = 6) -> dict:
+    """The whole real-photo chain on realistic synthetic photos: the A4 sheet must be FOUND
+    (no corners given), the garment segmented by the plain-background segmenter (rembg is better,
+    but needs a download), turned upright from any rotation, measured. Plus the no-sheet
+    'approximate' mode with the correct size label."""
+    try:
+        from fold_and_place.vision.reference import detect_a4, main_part
+        from fold_and_place.vision.synth import render
+    except ImportError:  # pragma: no cover
+        return {"skipped": "needs OpenCV"}
+    from fold_and_place.vision.measure import drop_marker, homography
+    from fold_and_place.vision.models import PlainSegmenter
+    from fold_and_place.vision.shape import silhouette
+
+    seg = PlainSegmenter()
+    rows = []
+    for ci, cat in enumerate(REAL_CASES):
+        for k in range(per_case):
+            seed = 1000 + 37 * ci + k
+            for sheet in (True, False):
+                ph = render(cat, "M", seed=seed, sheet=sheet)
+                g = ph.garment
+                ref = detect_a4(ph.image) if sheet else None
+                mask = seg(ph.image)
+                if ref is not None:
+                    mask = drop_marker(mask, ref[0], grow_px=max(6.0, 0.05 * np.linalg.norm(ref[0][1] - ref[0][0])))
+                mask = main_part(mask)
+                row = {"category": cat, "seed": seed, "sheet_in_photo": sheet, "sheet_found": ref is not None,
+                       "true_w": g.flat_w, "true_l": g.flat_l}
+                try:
+                    if sheet and ref is None:
+                        raise ValueError("sheet not found")
+                    s = silhouette(mask, g.template, homography(ref[0], ref[1]) if ref is not None else None, length_cm=g.flat_l)
+                    row.update(meas_w=round(s.measured.flat_w, 2), meas_l=round(s.measured.flat_l, 2))
+                except ValueError:
+                    row.update(meas_w=np.nan, meas_l=np.nan)
+                rows.append(row)
+    df = pd.DataFrame(rows)
+    df["err_w_cm"] = (df.meas_w - df.true_w).round(2)
+    df["err_l_cm"] = (df.meas_l - df.true_l).round(2)
+    save_csv(df, d, "E3_realistic.csv")
+    withs, nos = df[df.sheet_in_photo], df[~df.sheet_in_photo]
+    found = withs[withs.sheet_found]
+    out = {
+        "photos_with_sheet": len(withs),
+        "sheet_found_pct": round(100 * withs.sheet_found.mean(), 1),
+        "measured_mae_w_cm": round(float(found.err_w_cm.abs().mean()), 2),
+        "measured_mae_l_cm": round(float(found.err_l_cm.abs().mean()), 2),
+        "measured_median_w_cm": round(float(found.err_w_cm.abs().median()), 2),
+        "measured_median_l_cm": round(float(found.err_l_cm.abs().median()), 2),
+        "within_3cm_pct": round(100 * float(((found.err_w_cm.abs() <= 3) & (found.err_l_cm.abs() <= 3)).mean()), 1),
+        "approx_mae_w_cm": round(float(nos.err_w_cm.abs().mean()), 2),
+        "approx_rel_w_pct": round(float((100 * nos.err_w_cm.abs() / nos.true_w).mean()), 1),
+    }
+    fig, axes = plt.subplots(1, 2, figsize=(9, 3.6), constrained_layout=True)
+    for ax, (name, sub) in zip(axes, (("A4 sheet found automatically", found), ("no sheet: approximate", nos))):
+        ax.scatter(sub.true_w, sub.err_w_cm, s=14, alpha=0.7, label="width")
+        if name.startswith("A4"):
+            ax.scatter(sub.true_l, sub.err_l_cm, s=14, alpha=0.7, label="length")
+        ax.axhline(0, color="grey", lw=0.8)
+        ax.set_xlabel("True size (cm)")
+        ax.set_ylabel("Measured - true (cm)")
+        ax.set_title(name, fontsize=9)
+        ax.legend(fontsize=7)
+    save_fig(fig, d, "E3_realistic.png")
+    return out
+
+
 def run(path=None, trials: int = 12, seed: int = 0) -> dict:
     d = out_dir(path)
+    real = realistic(d)
     rng = np.random.default_rng(seed)
     rows = []
     for noise in (0.5, 1.5):
@@ -108,6 +180,7 @@ def run(path=None, trials: int = 12, seed: int = 0) -> dict:
         "mean_abs_err_l_cm": round(float(df.err_l_cm.abs().mean()), 2),
         "p95_abs_err_cm": round(float(np.percentile(np.r_[df.err_w_cm.abs(), df.err_l_cm.abs()], 95)), 2),
         "photos": len(df),
+        "realistic": real,
     }
     write_notes(
         d,
@@ -118,6 +191,21 @@ def run(path=None, trials: int = 12, seed: int = 0) -> dict:
 {out['photos']} synthetic photos ({len(CASES)} garments, camera tilt 0-25 deg, A4-sheet corner noise 0.5
 and 1.5 px). Mean absolute error: width {out['mean_abs_err_w_cm']} cm, length {out['mean_abs_err_l_cm']} cm;
 95th percentile {out['p95_abs_err_cm']} cm. See E3_summary.csv per garment.
+
+## The whole chain on realistic photos
+
+{real.get('photos_with_sheet', 0)} realistic synthetic photos (textured bedsheet, prints, creases, shadows,
+uneven light, any rotation, tilt up to 25 deg, JPEG), the A4 sheet **found automatically**, the garment
+segmented by the plain-background segmenter and turned upright: sheet found in
+{real.get('sheet_found_pct', 'n/a')}% of photos; mean absolute error width {real.get('measured_mae_w_cm', 'n/a')} cm,
+length {real.get('measured_mae_l_cm', 'n/a')} cm (median {real.get('measured_median_w_cm', 'n/a')} /
+{real.get('measured_median_l_cm', 'n/a')} cm); {real.get('within_3cm_pct', 'n/a')}% within 3 cm on both. Without a
+sheet, scaled to the correct size label, width error {real.get('approx_mae_w_cm', 'n/a')} cm
+({real.get('approx_rel_w_pct', 'n/a')}%; this mode cannot undo camera tilt, so shoot from straight above).
+Segmenting a plain-background photo is not the bottleneck here: as in the perfect-mask test, the error is
+driven by how precisely the sheet's corners are located relative to the sheet's size in the photo (a small,
+distant sheet magnifies corner error). The synthetic garments have wrinkled edges, which adds a little.
+E8 repeats this on real photos.
 
 For comparison, published garment-measurement systems report about 1 cm average error on real
 photos (Paulauskaite-Taraseviciene et al., Applied Sciences 2022). Our synthetic test has a perfect
