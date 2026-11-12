@@ -87,9 +87,16 @@ def load_preset(name: str) -> Wardrobe:
     return Wardrobe(name, p["label"], p["width"], p["height"], p["depth"], comps)
 
 
+# Shoulder heights set at run time (the dashboard's "who uses this wardrobe"); these win over
+# configs/personas.yaml.
+SHOULDER_CM: dict[str, float] = {}
+
+
 def golden_for(owner: str) -> tuple[float, float]:
     """Golden zone for a household member: default bottom, their shoulder height on top."""
     lo, hi = config.golden_zone()
+    if owner in SHOULDER_CM:
+        return lo, float(SHOULDER_CM[owner])
     persona = config.personas().get(owner)
     if persona and "shoulder_cm" in persona:
         hi = float(persona["shoulder_cm"])

@@ -62,10 +62,29 @@ def test_html_is_self_contained():
     assert "http://" not in page.split("<script>", 1)[0]  # no external resources in the head
 
 
-@pytest.mark.parametrize("page", ["Home.py", "pages/1_Wardrobe.py", "pages/2_Garments.py", "pages/4_Fold_studio.py", "pages/6_Experiments.py"])
-def test_pages_render(page):
+PAGES = ["views/wardrobe.py", "views/clothes.py", "views/plan.py", "views/sharing.py", "views/fold_studio.py",
+         "views/experiments.py", "views/method.py"]
+
+
+def test_every_page_renders():
     testing = pytest.importorskip("streamlit.testing.v1")
     from fold_and_place.config import ROOT
 
-    at = testing.AppTest.from_file(str(ROOT / "fold_and_place" / "app" / page), default_timeout=120).run()
+    at = testing.AppTest.from_file(str(ROOT / "fold_and_place" / "app" / "app.py"), default_timeout=240).run()
     assert not at.exception, [e.value for e in at.exception]
+    for page in PAGES:
+        at.switch_page(page).run()
+        assert not at.exception, (page, [e.value for e in at.exception])
+
+
+def test_printable_plan_lists_every_stored_garment():
+    from fold_and_place.app.printable import plan_html
+    from fold_and_place.garments import household_garments
+    from fold_and_place.storage import load_preset
+    from fold_and_place.storage.baselines import b1_traditional
+
+    gs = household_garments()[:30]
+    p = b1_traditional(gs, load_preset("two_door"))
+    page = plan_html(p)
+    assert page.count("<li><b>") == len(p.stored)
+    assert "<svg" in page

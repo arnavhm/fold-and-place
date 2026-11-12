@@ -70,6 +70,10 @@ class Plan:
                 return lane
         return None
 
+    def lanes_in(self, cid: str) -> list[Lane]:
+        """Lanes of one compartment, in placement order."""
+        return [lane for lane in self.lanes if lane.compartment == cid]
+
     def compartment_of(self, gid: str) -> Compartment | None:
         lane = self.lane_of(gid)
         return self.wardrobe.get(lane.compartment) if lane else None

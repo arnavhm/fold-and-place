@@ -190,3 +190,36 @@ class Analyzer:
         conf = float(top3[0][1]) * SIZE_CONFIDENCE[source]
         return Guess(category, top3, photo_type, fabric, embellish, flat_w, flat_l, source, round(conf, 3), sleeve,
                      mask, outline, ref, upright, res, hem)
+
+
+def measure_photo(img, category: str, size: str = "M", segmenter=None) -> Guess:
+    """Measuring only (no recognition models): the person says what the garment is; the photo
+    gives the size and outline. Uses rembg when installed, else the plain-background segmenter."""
+    cat_cfg = config.categories()[category]
+    ref = find_reference(img)
+    if segmenter is None:
+        try:
+            segmenter = FlatSegmenter()
+            mask = segmenter(img)
+            if mask.mean() < 0.002:
+                raise ValueError
+        except Exception:  # rembg missing or failed
+            mask = PlainSegmenter()(img)
+    else:
+        mask = segmenter(img)
+    if ref is not None:
+        side = np.linalg.norm(ref[0][1] - ref[0][0])
+        mask = drop_marker(mask, ref[0], grow_px=max(6.0, 0.05 * side))
+    mask = main_part(mask)
+    chart = make_garment(category, "probe", size)
+    H = homography(ref[0], ref[1]) if ref is not None else None
+    try:
+        sil = silhouette(mask, cat_cfg["template"], H, length_cm=chart.flat_l)
+    except ValueError:
+        w, length, src = size_from_chart(category, size, mask, "flat")
+        return Guess(category, [(category, 1.0)], "flat", chart.fabric, chart.embellish, w, length, src, 0.6, None, mask)
+    m = sil.measured
+    source = "marker" if ref is not None else ("fabric_standard" if chart.is_drape else "approx")
+    return Guess(category, [(category, 1.0)], "flat", chart.fabric, chart.embellish, round(float(m.flat_w), 1),
+                 round(float(m.flat_l), 1), source, SIZE_CONFIDENCE[source],
+                 round(float(m.sleeve_len), 1) if m.sleeve_len else None, mask, sil.outline, ref, sil.grid, sil.res, m.hem_w)

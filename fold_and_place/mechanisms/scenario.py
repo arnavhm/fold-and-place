@@ -13,7 +13,6 @@ fabric are public (vision measures them).
 from __future__ import annotations
 
 import dataclasses
-import os
 from dataclasses import dataclass, field
 
 from fold_and_place.garments import household_garments
@@ -40,9 +39,9 @@ def shrink(w: Wardrobe, factor: float, tag: str = "") -> Wardrobe:
 class Scenario:
     garments: list[Garment]
     wardrobe: Wardrobe
-    cfg: SolveConfig = field(
-        default_factory=lambda: SolveConfig(time_limit_s=60, workers=min(8, os.cpu_count() or 1), warm_start=False)
-    )
+    # One solver worker with a fixed seed: when several plans tie, the same one is picked every
+    # run, so payments do not shift between runs (utilities never depended on it).
+    cfg: SolveConfig = field(default_factory=lambda: SolveConfig(time_limit_s=60, workers=1, warm_start=False))
     _cache: dict = field(default_factory=dict, repr=False)
     solves: int = 0
 

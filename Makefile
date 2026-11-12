@@ -27,7 +27,7 @@ smoke:            ## quick check that the vision models load and run on bundled 
 	$(PY) scripts/smoke_vision.py
 
 app:              ## start the dashboard
-	$(PY) -m streamlit run fold_and_place/app/Home.py
+	$(PY) -m streamlit run fold_and_place/app/app.py
 
 test:
 	$(PY) -m pytest

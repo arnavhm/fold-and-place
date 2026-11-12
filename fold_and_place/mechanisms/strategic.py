@@ -146,3 +146,25 @@ def garment_level_test(mech, sc: Scenario, trials: int, seed: int = 0) -> dict:
         "max_gain_points": round(max_gain, 3),
         "non_monotone": non_monotone,
     }
+
+
+def collusion_test(mech: Mechanism, sc: Scenario, pair: tuple[str, str], multipliers=(0.5, 1.0, 1.5, 2.0, 3.0)) -> dict:
+    """Two people agree on a joint lie (each scales all their values). Does the PAIR's combined
+    true utility rise? Single-person truthfulness (VCG, RSD) does not rule this out."""
+    true = sc.true_values()
+    honest = sum(mech.utility(sc, true, a, true) for a in pair)
+    best, combo = 0.0, None
+    for m1 in multipliers:
+        for m2 in multipliers:
+            if m1 == 1.0 and m2 == 1.0:
+                continue
+            rep = dict(true)
+            for g in sc.garments:
+                if g.owner == pair[0]:
+                    rep[g.id] = quantize(true[g.id] * m1)
+                elif g.owner == pair[1]:
+                    rep[g.id] = quantize(true[g.id] * m2)
+            joint = sum(mech.utility(sc, rep, a, true) for a in pair)
+            if joint - honest > best + GAIN_TOL:
+                best, combo = joint - honest, (m1, m2)
+    return {"mechanism": mech.name, "pair": pair, "honest": round(honest, 3), "best_gain": round(best, 3), "multipliers": combo}
