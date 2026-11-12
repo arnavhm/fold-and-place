@@ -53,8 +53,7 @@ def analyse(data: bytes, size: str, category: str | None):
     cache = st.session_state.setdefault("_analysis", {})
     if key in cache:
         return cache[key]
-    img = Image.open(io.BytesIO(data)).convert("RGB")
-    img.thumbnail((1800, 1800))
+    img = open_photo(data)
     if vision_status()["recognise"]:
         guess = analyzer().analyse(img, size=size, category=category)
     else:
@@ -63,6 +62,25 @@ def analyse(data: bytes, size: str, category: str | None):
         guess = measure_photo(img, category or "tshirt", size)
     cache[key] = (guess, img)
     return guess, img
+
+
+def open_photo(data: bytes) -> Image.Image:
+    """Phone photos: HEIC when pillow-heif is installed, EXIF rotation applied, at most 1800 px."""
+    from PIL import ImageOps, UnidentifiedImageError
+
+    try:
+        import pillow_heif
+
+        pillow_heif.register_heif_opener()
+    except ImportError:
+        pass
+    try:
+        img = Image.open(io.BytesIO(data))
+    except UnidentifiedImageError as e:
+        raise ValueError("unsupported image - iPhone HEIC photos need `pip install pillow-heif`, or export as JPEG") from e
+    img = ImageOps.exif_transpose(img).convert("RGB")
+    img.thumbnail((1800, 1800))
+    return img
 
 
 def overlay(img: Image.Image, guess) -> Image.Image:
