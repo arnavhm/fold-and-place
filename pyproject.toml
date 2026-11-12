@@ -28,6 +28,7 @@ vision = [
     "scikit-learn>=1.4",
     "pillow>=10.0",
     "kaggle>=1.6",
+    "six",  # kaggle 2.2.x imports six without declaring it
 ]
 dev = ["pytest>=8.0", "ruff>=0.6", "scikit-learn>=1.4", "pillow>=10.0", "streamlit>=1.50"]
 
